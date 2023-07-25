@@ -17,7 +17,6 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 const parseRTF = require('rtf-parser');
-const util = require('util');
 const fs = require('fs');
 
 let data: any;
@@ -34,10 +33,8 @@ load('proto/propresenter.proto', (err, root) => {
     throw err;
   }
 
-  // Obtain a message type
   const messageType = root.lookupType('rv.data.Presentation');
 
-  // Decode an Uint8Array (browser) or Buffer (node) to a message
   const message = messageType.decode(data);
 
   const outputObject = messageType.toObject(message);
@@ -47,31 +44,9 @@ load('proto/propresenter.proto', (err, root) => {
       .element.text.rtfData;
 
   parseRTF.string(textElement, (err, doc) => {
+    if (err) throw err;
     console.log(doc.content[0].value);
   });
-
-  // const rtfData: any[] = [];
-
-  // textElement.forEach((element: number, index: number) => {
-  //   rtfData[index] = String.fromCharCode(element);
-  // });
-
-  // const rtfDataString = rtfData.join('');
-
-  // console.log(rtfDataString);
-
-  // fs.writeFile('test.txt', rtfDataString, (error) => {
-  //   console.log(error);
-  // });
-
-  // console.log(`Message: ${message.uuid.string}`);
-
-  // If the application uses length-delimited buffers, there is also encodeDelimited and decodeDelimited.
-
-  // Maybe convert the message back to a plain object
-  // const object = AwesomeMessage.toObject(message);
-
-  // console.log(`Object: ${object}`);
 });
 
 class AppUpdater {
@@ -86,7 +61,6 @@ let mainWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  // console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
