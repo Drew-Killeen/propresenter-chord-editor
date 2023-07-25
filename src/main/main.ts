@@ -22,7 +22,7 @@ const fs = require('fs');
 let data: any;
 
 try {
-  data = fs.readFileSync('test.pro');
+  data = fs.readFileSync('amazinggrace.pro');
 } catch (err) {
   console.error(err);
 }

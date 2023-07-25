@@ -15,7 +15,6 @@ body {
 
 .left-panel {
   flex: 1;
-  min-width: 200px;
   max-width: 300px;
   height: 100vh;
   display: flex;
