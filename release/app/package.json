@@ -1,0 +1,18 @@
+{
+  "name": "propresenter-chord-editor",
+  "version": "1.0.0",
+  "description": "Edit chords in your ProPresenter presentations.",
+  "license": "MIT",
+  "author": {
+    "name": "Drew Killeen",
+    "email": "drewkilleen00@gmail.com",
+    "url": "https://github.com/drew-killeen/propresenter-chord-editor"
+  },
+  "main": "./dist/main/main.js",
+  "scripts": {
+    "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
+    "postinstall": "npm run rebuild && npm run link-modules",
+    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
+  },
+  "dependencies": {}
+}
