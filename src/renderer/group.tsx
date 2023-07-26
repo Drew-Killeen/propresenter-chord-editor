@@ -5,8 +5,7 @@ export default function Group({
   cueGroup: any;
   children: any;
 }) {
-  const label: string = 'test';
-  //   const label: string = cueGroup.name;
+  const label: string = cueGroup.name;
 
   return (
     <div className="group">

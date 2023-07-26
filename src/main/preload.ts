@@ -5,5 +5,6 @@ contextBridge.exposeInMainWorld('api', {
   chrome: () => process.versions.chrome,
   electron: () => process.versions.electron,
   sendMessage: (message) => ipcRenderer.send('message', message),
-  testMessage: (callback) => ipcRenderer.on('test', callback),
+  getLyrics: (callback) => ipcRenderer.on('getLyrics', callback),
+  getGroups: (callback) => ipcRenderer.on('getGroups', callback),
 });
