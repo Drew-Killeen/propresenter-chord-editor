@@ -21,7 +21,8 @@ const fs = require('fs');
 
 let data: any;
 
-let lyric: string = '';
+const lyrics: any = [[]];
+let groups: any = {};
 
 try {
   data = fs.readFileSync('Evidence-Chords.pro');
@@ -41,15 +42,38 @@ load('proto/propresenter.proto', (err, root) => {
 
   const outputObject = messageType.toObject(message);
 
-  const textElement: any[] =
-    outputObject.cues[1].actions[0].slide.presentation.baseSlide.elements[0]
-      .element.text.rtfData;
-
-  parseRTF.string(textElement, (err, doc) => {
-    if (err) throw err;
-    console.log(doc.content[1].value);
-    lyric = doc.content[1].value;
+  fs.writeFile('test.json', JSON.stringify(outputObject.cues[1]), (error) => {
+    console.log(error);
   });
+
+  // Get group names and colors
+  for (let i = 0; i < outputObject.cueGroups.length; i++) {
+    groups[outputObject.cueGroups[i].group.uuid.string] =
+      outputObject.cueGroups[i].group;
+  }
+
+  // Build lyrics object
+  for (let j = 0; j < outputObject.cues.length; j++) {
+    const textElement: any[] =
+      outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
+        .element.text.rtfData;
+
+    parseRTF.string(textElement, (err, doc) => {
+      if (err) throw err;
+
+      for (let i = 0; i < doc.content.length; i++) {
+        if (Object.keys(doc.content[i]).includes('value')) {
+          lyrics[0].push(doc.content[i].value);
+        } else {
+          lyrics[0].push(doc.content[i].content[0].value);
+        }
+      }
+
+      // fs.writeFile('test.json', JSON.stringify(doc), (error) => {
+      //   console.log(error);
+      // });
+    });
+  }
 });
 
 ipcMain.on('message', (event, args) => {
@@ -112,7 +136,7 @@ const createWindow = async () => {
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.webContents.send('test', lyric);
+    mainWindow.webContents.send('test', lyrics);
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
