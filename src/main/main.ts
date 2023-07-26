@@ -21,8 +21,10 @@ const fs = require('fs');
 
 let data: any;
 
+let lyric: string = '';
+
 try {
-  data = fs.readFileSync('amazinggrace.pro');
+  data = fs.readFileSync('Evidence-Chords.pro');
 } catch (err) {
   console.error(err);
 }
@@ -45,8 +47,13 @@ load('proto/propresenter.proto', (err, root) => {
 
   parseRTF.string(textElement, (err, doc) => {
     if (err) throw err;
-    console.log(doc.content[0].value);
+    console.log(doc.content[1].value);
+    lyric = doc.content[1].value;
   });
+});
+
+ipcMain.on('message', (event, args) => {
+  console.log(args);
 });
 
 class AppUpdater {
@@ -58,16 +65,6 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  event.reply('ipc-example', msgTemplate('pong'));
-});
-
-if (process.env.NODE_ENV === 'production') {
-  const sourceMapSupport = require('source-map-support');
-  sourceMapSupport.install();
-}
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -108,15 +105,14 @@ const createWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
+      preload: path.join(__dirname, 'preload.ts'),
     },
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
+    mainWindow.webContents.send('test', lyric);
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
@@ -133,12 +129,6 @@ const createWindow = async () => {
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
-
-  // Open urls in the user's browser
-  mainWindow.webContents.setWindowOpenHandler((edata) => {
-    shell.openExternal(edata.url);
-    return { action: 'deny' };
-  });
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
