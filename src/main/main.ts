@@ -21,11 +21,11 @@ const fs = require('fs');
 
 let data: any;
 
-const lyrics: any = [[]];
+const lyrics: any = {};
 let groups: any = {};
 
 try {
-  data = fs.readFileSync('Evidence-Chords.pro');
+  data = fs.readFileSync('Glorious Day-Chords.pro');
 } catch (err) {
   console.error(err);
 }
@@ -42,18 +42,21 @@ load('proto/propresenter.proto', (err, root) => {
 
   const outputObject = messageType.toObject(message);
 
-  fs.writeFile('test.json', JSON.stringify(outputObject.cues[1]), (error) => {
+  fs.writeFile('test.json', JSON.stringify(outputObject.cueGroups), (error) => {
     console.log(error);
   });
 
   // Get group names and colors
   for (let i = 0; i < outputObject.cueGroups.length; i++) {
     groups[outputObject.cueGroups[i].group.uuid.string] =
-      outputObject.cueGroups[i].group;
+      outputObject.cueGroups[i];
   }
+
+  console.log(groups);
 
   // Build lyrics object
   for (let j = 0; j < outputObject.cues.length; j++) {
+    const cueUuid: string = outputObject.cues[j].uuid.string;
     const textElement: any[] =
       outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
         .element.text.rtfData;
@@ -63,9 +66,16 @@ load('proto/propresenter.proto', (err, root) => {
 
       for (let i = 0; i < doc.content.length; i++) {
         if (Object.keys(doc.content[i]).includes('value')) {
-          lyrics[0].push(doc.content[i].value);
+          if (!lyrics[cueUuid]) {
+            lyrics[cueUuid] = doc.content[i].value;
+          } else {
+            lyrics[cueUuid] = lyrics[cueUuid] + '<br/>' + doc.content[i].value;
+          }
+        } else if (!lyrics[cueUuid]) {
+          lyrics[cueUuid] = doc.content[i].content[0].value;
         } else {
-          lyrics[0].push(doc.content[i].content[0].value);
+          lyrics[cueUuid] =
+            lyrics[cueUuid] + '<br/>' + doc.content[i].content[0].value;
         }
       }
 

@@ -22,17 +22,13 @@ function Main() {
 
   const groupElements = Object.keys(groups).map((key: any) => {
     return (
-      <Group key={groups[key].uuid.string} cueGroup={groups[key]}>
-        <Slide id={1} label="First Slide">
-          {lyric}
-        </Slide>
-        <Slide id={2}>{lyric}</Slide>
-        <Slide id={3}>{lyric}</Slide>
-      </Group>
+      <Group
+        lyrics={lyric}
+        key={groups[key].group.uuid.string}
+        cueGroup={groups[key]}
+      />
     );
   });
-
-  // const groupElements = <></>;
 
   return (
     <div id="main">
