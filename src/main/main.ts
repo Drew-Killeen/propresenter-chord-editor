@@ -16,6 +16,7 @@ import { load } from 'protobufjs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
+const os = require('os');
 const parseRTF = require('rtf-parser');
 const fs = require('fs');
 
@@ -51,8 +52,6 @@ load('proto/propresenter.proto', (err, root) => {
     groups[outputObject.cueGroups[i].group.uuid.string] =
       outputObject.cueGroups[i];
   }
-
-  console.log(groups);
 
   // Build lyrics object
   for (let j = 0; j < outputObject.cues.length; j++) {
@@ -146,6 +145,20 @@ const createWindow = async () => {
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
+    const filePath = os.homedir() + '/Documents/ProPresenter/Libraries';
+
+    let libraryList: string[];
+
+    if (fs.existsSync(filePath)) {
+      console.log('Directory exists.');
+      fs.readdir(filePath, (err, files) => {
+        libraryList = files;
+        console.log(libraryList);
+      });
+    } else {
+      console.log('Directory does not exist.');
+    }
+
     mainWindow.webContents.send('getLyrics', lyrics);
     mainWindow.webContents.send('getGroups', groups);
     if (!mainWindow) {
