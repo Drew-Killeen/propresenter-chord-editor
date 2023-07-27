@@ -26,7 +26,7 @@ const lyrics: any = {};
 let groups: any = {};
 
 try {
-  data = fs.readFileSync('Glorious Day-Chords.pro');
+  data = fs.readFileSync('Evidence-Chords.pro');
 } catch (err) {
   console.error(err);
 }
@@ -43,9 +43,9 @@ load('proto/propresenter.proto', (err, root) => {
 
   const outputObject = messageType.toObject(message);
 
-  fs.writeFile('test.json', JSON.stringify(outputObject.cueGroups), (error) => {
-    console.log(error);
-  });
+  // fs.writeFile('test.json', JSON.stringify(outputObject.cueGroups), (error) => {
+  //   console.log(error);
+  // });
 
   // Get group names and colors
   for (let i = 0; i < outputObject.cueGroups.length; i++) {
@@ -88,6 +88,13 @@ load('proto/propresenter.proto', (err, root) => {
 ipcMain.on('message', (event, args) => {
   console.log(args);
 });
+
+const getDirectories = (source) => {
+  return fs
+    .readdirSync(source, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+};
 
 class AppUpdater {
   constructor() {
@@ -151,16 +158,15 @@ const createWindow = async () => {
 
     if (fs.existsSync(filePath)) {
       console.log('Directory exists.');
-      fs.readdir(filePath, (err, files) => {
-        libraryList = files;
-        console.log(libraryList);
-      });
+      libraryList = getDirectories(filePath);
+      console.log(libraryList);
+      mainWindow?.webContents.send('getLibraries', libraryList);
     } else {
       console.log('Directory does not exist.');
     }
 
-    mainWindow.webContents.send('getLyrics', lyrics);
-    mainWindow.webContents.send('getGroups', groups);
+    mainWindow?.webContents.send('getLyrics', lyrics);
+    mainWindow?.webContents.send('getGroups', groups);
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }

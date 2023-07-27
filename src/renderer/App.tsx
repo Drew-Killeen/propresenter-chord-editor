@@ -1,12 +1,14 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useEffect, useState } from 'react';
-import Slide from './slide';
-import Group from './group';
+import Slide from './components/slide';
+import Group from './components/group';
+import Libraries from './components/libraries';
 
 function Main() {
   const [lyric, setLyric] = useState<any>();
   const [groups, setGroups] = useState<any>({});
+  const [libraries, setLibraries] = useState<string[]>([]);
 
   window.api.getLyrics((event, value) => {
     setLyric(value);
@@ -14,6 +16,10 @@ function Main() {
 
   window.api.getGroups((event, value) => {
     setGroups(value);
+  });
+
+  window.api.getLibraries((event, value) => {
+    setLibraries(value);
   });
 
   const sendMessage = () => {
@@ -33,10 +39,7 @@ function Main() {
   return (
     <div id="main">
       <div className="left-panel panel">
-        <div className="libraries">
-          <div className="libraries-header header">Libraries</div>
-          <div className="libraries-content">Default</div>
-        </div>
+        <Libraries libraries={libraries} />
         <div className="documents">
           <div className="documents-header header">Documents</div>
           <div className="documents-content">Default</div>
