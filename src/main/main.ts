@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { load } from 'protobufjs';
@@ -26,7 +26,7 @@ const lyrics: any = {};
 let groups: any = {};
 
 try {
-  data = fs.readFileSync('Evidence-Chords.pro');
+  data = fs.readFileSync('Even So Come-Chords.pro');
 } catch (err) {
   console.error(err);
 }
@@ -85,15 +85,33 @@ load('proto/propresenter.proto', (err, root) => {
   }
 });
 
-ipcMain.on('message', (event, args) => {
-  console.log(args);
-});
-
+// TODO: Convert function to async
 const getDirectories = (source) => {
   return fs
     .readdirSync(source, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
+};
+
+const selectFilePath = async (): Promise<string> => {
+  const filePath = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+  });
+  if (filePath.canceled) {
+    await dialog.showMessageBox({
+      message: 'ProPresenter directory not found.',
+      type: 'error',
+    });
+    return selectFilePath();
+  }
+  if (!filePath.filePaths[0].includes('ProPresenter')) {
+    await dialog.showMessageBox({
+      message: 'Directory does not contain any ProPresenter files.',
+      type: 'error',
+    });
+    return selectFilePath();
+  }
+  return filePath.filePaths[0] + '\\Libraries';
 };
 
 class AppUpdater {
@@ -149,20 +167,42 @@ const createWindow = async () => {
     },
   });
 
+  ipcMain.on('selectNewFilePath', (event) => {
+    selectFilePath()
+      .then((filePath) => {
+        const libraryList: string[] = getDirectories(filePath);
+        mainWindow?.webContents.send('filePath', filePath);
+        mainWindow?.webContents.send('getLibraries', libraryList);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
-    const filePath = os.homedir() + '/Documents/ProPresenter/Libraries';
+    let filePath = os.homedir() + '\\Documents\\ProPresenter\\Libraries';
 
     let libraryList: string[];
 
     if (fs.existsSync(filePath)) {
       console.log('Directory exists.');
       libraryList = getDirectories(filePath);
-      console.log(libraryList);
+      mainWindow?.webContents.send('filePath', filePath);
       mainWindow?.webContents.send('getLibraries', libraryList);
     } else {
       console.log('Directory does not exist.');
+      selectFilePath()
+        .then((value) => {
+          filePath = value;
+          libraryList = getDirectories(filePath);
+          mainWindow?.webContents.send('filePath', filePath);
+          mainWindow?.webContents.send('getLibraries', libraryList);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
     mainWindow?.webContents.send('getLyrics', lyrics);

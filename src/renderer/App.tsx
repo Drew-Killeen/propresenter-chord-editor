@@ -9,6 +9,7 @@ function Main() {
   const [lyric, setLyric] = useState<any>();
   const [groups, setGroups] = useState<any>({});
   const [libraries, setLibraries] = useState<string[]>([]);
+  const [filePath, setFilePath] = useState<string>('none');
 
   window.api.getLyrics((event, value) => {
     setLyric(value);
@@ -22,8 +23,12 @@ function Main() {
     setLibraries(value);
   });
 
+  window.api.filePath((event, value) => {
+    setFilePath(value);
+  });
+
   const sendMessage = () => {
-    api.sendMessage('test');
+    api.selectNewFilePath();
   };
 
   const groupElements = Object.keys(groups).map((key: any) => {
@@ -44,6 +49,10 @@ function Main() {
           <div className="documents-header header">Documents</div>
           <div className="documents-content">Default</div>
           <div className="button-area">
+            <div className="file-path">Current file path: {filePath}</div>
+            <button type="button" onClick={sendMessage}>
+              Change file path
+            </button>
             <button type="button" onClick={sendMessage}>
               Save
             </button>

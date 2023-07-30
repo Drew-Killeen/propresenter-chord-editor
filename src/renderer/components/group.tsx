@@ -29,8 +29,6 @@ export default function Group({
     if (cueGroup.group.color.green) green = cueGroup.group.color.green * 255;
     if (cueGroup.group.color.blue) blue = cueGroup.group.color.blue * 255;
 
-    console.log(red);
-
     document.getElementById(cueGroup.group.uuid.string).style.background =
       'rgb(' + red + ', ' + green + ', ' + blue + ')';
   }, [cueGroup]);
