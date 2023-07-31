@@ -1,10 +1,15 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useEffect, useState } from 'react';
-import Slide from './components/slide';
+import { useState } from 'react';
 import Group from './components/group';
 import Libraries from './components/libraries';
 import Documents from './components/documents';
+
+declare global {
+  interface Window {
+    api: any;
+  }
+}
 
 function Main() {
   const [lyric, setLyric] = useState<any>();
@@ -13,30 +18,30 @@ function Main() {
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
 
-  window.api.getLyrics((event, value) => {
+  window.api.getLyrics((_event: any, value: any) => {
     setLyric(value);
   });
 
-  window.api.getGroups((event, value) => {
+  window.api.getGroups((_event: any, value: any) => {
     setGroups(value);
   });
 
-  window.api.getLibraries((event, value) => {
+  window.api.getLibraries((_event: any, value: string[]) => {
     setLibraries(value);
   });
-  window.api.getDocuments((event, value) => {
+  window.api.getDocuments((_event: any, value: string[]) => {
     setDocuments(value);
   });
 
-  window.api.filePath((event, value) => {
+  window.api.filePath((_event: any, value: string) => {
     setFilePath(value);
   });
 
   const sendMessage = () => {
-    api.selectNewFilePath();
+    window.api.selectNewFilePath();
   };
 
-  const groupElements = Object.keys(groups).map((key: any) => {
+  const groupElements = Object.keys(groups).map((key: string) => {
     return (
       <Group
         lyrics={lyric}

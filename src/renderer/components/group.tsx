@@ -4,21 +4,21 @@ import Slide from './slide';
 export default function Group({
   cueGroup,
   lyrics,
-  children,
 }: {
   cueGroup: any;
   lyrics: any;
-  children?: any;
 }) {
   const label: string = cueGroup.group.name;
 
-  const slideElements = cueGroup.cueIdentifiers.map((value, index) => {
-    return (
-      <Slide key={value.string} id={index + 1}>
-        {lyrics[value.string]}
-      </Slide>
-    );
-  });
+  const slideElements = cueGroup.cueIdentifiers.map(
+    (value: any, index: number) => {
+      return (
+        <Slide key={value.string} id={index + 1}>
+          {lyrics[value.string]}
+        </Slide>
+      );
+    }
+  );
 
   useEffect(() => {
     let red = 0;
@@ -31,8 +31,9 @@ export default function Group({
       if (cueGroup.group.color.blue) blue = cueGroup.group.color.blue * 255;
     }
 
-    document.getElementById(cueGroup.group.uuid.string).style.background =
-      'rgb(' + red + ', ' + green + ', ' + blue + ')';
+    document.getElementById(
+      cueGroup.group.uuid.string
+    )!.style.background = `rgb(${red}, ${green}, ${blue})`;
   }, [cueGroup]);
 
   return (

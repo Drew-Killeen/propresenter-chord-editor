@@ -1,9 +1,9 @@
 export default function Documents({ documents }: any) {
-  const selectDocument = (documentName) => {
-    api.selectDocument(documentName);
+  const selectDocument = (documentName: string) => {
+    window.api.selectDocument(documentName);
   };
 
-  const documentElements = documents.map((document) => {
+  const documentElements = documents.map((document: string) => {
     return (
       <>
         <button
