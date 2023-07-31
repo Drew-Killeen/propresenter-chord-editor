@@ -84,6 +84,10 @@ const createWindow = async () => {
       });
   });
 
+  ipcMain.on('selectLibrary', (event, library) => {
+    console.log(library);
+  });
+
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
