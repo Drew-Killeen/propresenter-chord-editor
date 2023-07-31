@@ -91,7 +91,7 @@ const createWindow = async () => {
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
-    let filePath = `${os.homedir()}\\Documents\\ProPresenter\\Libraries`;
+    let filePath = `${os.homedir()}/Documents/ProPresenter/Libraries`;
 
     let libraryList: string[];
 

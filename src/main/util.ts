@@ -2,6 +2,7 @@
 import { URL } from 'url';
 import path from 'path';
 import fs from 'fs';
+import { dialog } from 'electron';
 
 export function resolveHtmlPath(htmlFileName: string) {
   if (process.env.NODE_ENV === 'development') {
@@ -39,5 +40,5 @@ export async function selectFilePath(): Promise<string> {
     });
     return selectFilePath();
   }
-  return filePath.filePaths[0] + '\\Libraries';
+  return filePath.filePaths[0] + '/Libraries';
 }
