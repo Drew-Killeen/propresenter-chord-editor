@@ -26,7 +26,6 @@ function Main() {
   });
   window.api.getDocuments((event, value) => {
     setDocuments(value);
-    console.log(value);
   });
 
   window.api.filePath((event, value) => {
@@ -51,9 +50,11 @@ function Main() {
     <div id="main">
       <div className="left-panel panel">
         <Libraries libraries={libraries} />
-        <Documents documents={documents}>
-          <div className="button-area">
-            <div className="file-path">Current file path: {filePath}</div>
+        <Documents documents={documents} />
+        <div className="button-area">
+          <div className="filepath-header">Current file path: </div>
+          <div className="button-area-content">
+            <div className="filepath">{filePath}</div>
             <button type="button" onClick={sendMessage}>
               Change file path
             </button>
@@ -61,7 +62,7 @@ function Main() {
               Save
             </button>
           </div>
-        </Documents>
+        </div>
       </div>
       <div className="center-panel panel">{groupElements}</div>
     </div>

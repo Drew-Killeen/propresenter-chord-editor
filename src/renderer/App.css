@@ -1,3 +1,10 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -25,22 +32,38 @@ body {
   background-color: #1e1e1e;
   flex: 4;
   height: 100vh;
+  overflow-y: auto;
 }
 
 /****** LEFT PANEL *******/
 
 .libraries {
   background-color: #707070;
-  flex: 1;
+  flex: 2;
+  height: 100%;
+  overflow: auto;
 }
 
 .documents {
-  flex: 2;
+  flex: 6;
   background: #5c5c5c;
+  height: 100%;
+  overflow: auto;
+}
+
+.button-area {
+  flex: 1;
+  background: #484848;
+  color: #fff;
+}
+
+.button-area-content {
+  padding: 10px;
 }
 
 .libraries-header,
-.documents-header {
+.documents-header,
+.filepath-header {
   padding: 8px;
   background: #343434;
   font-size: 12px;
@@ -70,6 +93,9 @@ body {
 
 .group-label-text {
   writing-mode: vertical-lr;
+  padding-left: 1px;
+  padding-right: 1px;
+  padding-top: 5px;
 }
 
 .slides {
@@ -86,5 +112,6 @@ body {
 }
 
 .slide-body {
-  padding: 8px;
+  padding: 12px;
+  font-size: 20px;
 }
