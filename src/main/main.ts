@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 /**
@@ -9,110 +10,14 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { load } from 'protobufjs';
+import fs from 'fs';
+import os from 'os';
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
-
-const os = require('os');
-const parseRTF = require('rtf-parser');
-const fs = require('fs');
-
-let data: any;
-
-const lyrics: any = {};
-let groups: any = {};
-
-try {
-  data = fs.readFileSync('Even So Come-Chords.pro');
-} catch (err) {
-  console.error(err);
-}
-
-load('proto/propresenter.proto', (err, root) => {
-  if (err) {
-    console.log(`Error: ${err}`);
-    throw err;
-  }
-
-  const messageType = root.lookupType('rv.data.Presentation');
-
-  const message = messageType.decode(data);
-
-  const outputObject = messageType.toObject(message);
-
-  // fs.writeFile('test.json', JSON.stringify(outputObject.cueGroups), (error) => {
-  //   console.log(error);
-  // });
-
-  // Get group names and colors
-  for (let i = 0; i < outputObject.cueGroups.length; i++) {
-    groups[outputObject.cueGroups[i].group.uuid.string] =
-      outputObject.cueGroups[i];
-  }
-
-  // Build lyrics object
-  for (let j = 0; j < outputObject.cues.length; j++) {
-    const cueUuid: string = outputObject.cues[j].uuid.string;
-    const textElement: any[] =
-      outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
-        .element.text.rtfData;
-
-    parseRTF.string(textElement, (err, doc) => {
-      if (err) throw err;
-
-      for (let i = 0; i < doc.content.length; i++) {
-        if (Object.keys(doc.content[i]).includes('value')) {
-          if (!lyrics[cueUuid]) {
-            lyrics[cueUuid] = doc.content[i].value;
-          } else {
-            lyrics[cueUuid] = lyrics[cueUuid] + '<br/>' + doc.content[i].value;
-          }
-        } else if (!lyrics[cueUuid]) {
-          lyrics[cueUuid] = doc.content[i].content[0].value;
-        } else {
-          lyrics[cueUuid] =
-            lyrics[cueUuid] + '<br/>' + doc.content[i].content[0].value;
-        }
-      }
-
-      // fs.writeFile('test.json', JSON.stringify(doc), (error) => {
-      //   console.log(error);
-      // });
-    });
-  }
-});
-
-// TODO: Convert function to async
-const getDirectories = (source) => {
-  return fs
-    .readdirSync(source, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-};
-
-const selectFilePath = async (): Promise<string> => {
-  const filePath = await dialog.showOpenDialog({
-    properties: ['openDirectory'],
-  });
-  if (filePath.canceled) {
-    await dialog.showMessageBox({
-      message: 'ProPresenter directory not found.',
-      type: 'error',
-    });
-    return selectFilePath();
-  }
-  if (!filePath.filePaths[0].includes('ProPresenter')) {
-    await dialog.showMessageBox({
-      message: 'Directory does not contain any ProPresenter files.',
-      type: 'error',
-    });
-    return selectFilePath();
-  }
-  return filePath.filePaths[0] + '\\Libraries';
-};
+import { getDirectories, resolveHtmlPath, selectFilePath } from './util';
+import getLyrics from './get-lyrics';
 
 class AppUpdater {
   constructor() {
@@ -167,7 +72,7 @@ const createWindow = async () => {
     },
   });
 
-  ipcMain.on('selectNewFilePath', (event) => {
+  ipcMain.on('selectNewFilePath', () => {
     selectFilePath()
       .then((filePath) => {
         const libraryList: string[] = getDirectories(filePath);
@@ -182,7 +87,7 @@ const createWindow = async () => {
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
-    let filePath = os.homedir() + '\\Documents\\ProPresenter\\Libraries';
+    let filePath = `${os.homedir()}\\Documents\\ProPresenter\\Libraries`;
 
     let libraryList: string[];
 
@@ -205,8 +110,11 @@ const createWindow = async () => {
         });
     }
 
-    mainWindow?.webContents.send('getLyrics', lyrics);
-    mainWindow?.webContents.send('getGroups', groups);
+    getLyrics('path', (err, lyrics, groups) => {
+      mainWindow?.webContents.send('getLyrics', lyrics);
+      mainWindow?.webContents.send('getGroups', groups);
+    });
+
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
