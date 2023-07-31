@@ -15,7 +15,7 @@ export function resolveHtmlPath(htmlFileName: string) {
 }
 
 // TODO: Convert function to async
-export function getDirectories(source) {
+export function getDirectories(source: fs.PathLike) {
   return fs
     .readdirSync(source, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
@@ -40,5 +40,11 @@ export async function selectFilePath(): Promise<string> {
     });
     return selectFilePath();
   }
-  return filePath.filePaths[0] + '/Libraries';
+  return `${filePath.filePaths[0]}/Libraries`;
+}
+
+// TODO: Convert function to async
+export function getDocuments(source: fs.PathLike) {
+  const txtFiles = fs.readdirSync(source);
+  return txtFiles.filter((el) => path.extname(el) === '.pro');
 }

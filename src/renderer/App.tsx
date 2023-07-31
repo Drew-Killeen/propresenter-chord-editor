@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import Slide from './components/slide';
 import Group from './components/group';
 import Libraries from './components/libraries';
+import Documents from './components/documents';
 
 function Main() {
   const [lyric, setLyric] = useState<any>();
   const [groups, setGroups] = useState<any>({});
   const [libraries, setLibraries] = useState<string[]>([]);
+  const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
 
   window.api.getLyrics((event, value) => {
@@ -21,6 +23,10 @@ function Main() {
 
   window.api.getLibraries((event, value) => {
     setLibraries(value);
+  });
+  window.api.getDocuments((event, value) => {
+    setDocuments(value);
+    console.log(value);
   });
 
   window.api.filePath((event, value) => {
@@ -45,9 +51,7 @@ function Main() {
     <div id="main">
       <div className="left-panel panel">
         <Libraries libraries={libraries} />
-        <div className="documents">
-          <div className="documents-header header">Documents</div>
-          <div className="documents-content">Default</div>
+        <Documents documents={documents}>
           <div className="button-area">
             <div className="file-path">Current file path: {filePath}</div>
             <button type="button" onClick={sendMessage}>
@@ -57,7 +61,7 @@ function Main() {
               Save
             </button>
           </div>
-        </div>
+        </Documents>
       </div>
       <div className="center-panel panel">{groupElements}</div>
     </div>

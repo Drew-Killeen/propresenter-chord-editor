@@ -16,7 +16,12 @@ import log from 'electron-log';
 import fs from 'fs';
 import os from 'os';
 import MenuBuilder from './menu';
-import { getDirectories, resolveHtmlPath, selectFilePath } from './util';
+import {
+  getDirectories,
+  getDocuments,
+  resolveHtmlPath,
+  selectFilePath,
+} from './util';
 import getLyrics from './get-lyrics';
 
 class AppUpdater {
@@ -28,6 +33,10 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+let filePath = `${os.homedir()}/Documents/ProPresenter/Libraries`;
+
+let currentLibrary = '';
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -74,7 +83,8 @@ const createWindow = async () => {
 
   ipcMain.on('selectNewFilePath', () => {
     selectFilePath()
-      .then((filePath) => {
+      .then((newFilePath) => {
+        filePath = newFilePath;
         const libraryList: string[] = getDirectories(filePath);
         mainWindow?.webContents.send('filePath', filePath);
         mainWindow?.webContents.send('getLibraries', libraryList);
@@ -85,14 +95,25 @@ const createWindow = async () => {
   });
 
   ipcMain.on('selectLibrary', (event, library) => {
-    console.log(library);
+    currentLibrary = library;
+    const documents = getDocuments(`${filePath}/${currentLibrary}`);
+
+    mainWindow?.webContents.send('getDocuments', documents);
+  });
+
+  ipcMain.on('selectDocument', (event, document) => {
+    getLyrics(
+      `${filePath}/${currentLibrary}/${document}`,
+      (err, lyrics, groups) => {
+        mainWindow?.webContents.send('getLyrics', lyrics);
+        mainWindow?.webContents.send('getGroups', groups);
+      }
+    );
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
-    let filePath = `${os.homedir()}/Documents/ProPresenter/Libraries`;
-
     let libraryList: string[];
 
     if (fs.existsSync(filePath)) {
@@ -113,11 +134,6 @@ const createWindow = async () => {
           console.log(err);
         });
     }
-
-    getLyrics('path', (err, lyrics, groups) => {
-      mainWindow?.webContents.send('getLyrics', lyrics);
-      mainWindow?.webContents.send('getGroups', groups);
-    });
 
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');

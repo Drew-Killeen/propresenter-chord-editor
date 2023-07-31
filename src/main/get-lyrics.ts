@@ -12,7 +12,7 @@ export default async function getLyrics(
   const groups: any = {};
 
   try {
-    data = fs.readFileSync('Even So Come-Chords.pro');
+    data = fs.readFileSync(filepath);
   } catch (err) {
     callback(err);
   }
