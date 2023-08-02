@@ -3,9 +3,8 @@
   "keywords": [],
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Drew Killeen",
+    "email": "drewkilleen00@gmail.com"
   },
   "main": "./src/main/main.ts",
   "scripts": {
@@ -148,8 +147,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "ProPresenterChordEditor",
+    "appId": "org.erb.ProPresenterChordEditor",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -204,12 +203,7 @@
     },
     "extraResources": [
       "./assets/**"
-    ],
-    "publish": {
-      "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
-    }
+    ]
   },
   "collective": {
     "url": "https://opencollective.com/electron-react-boilerplate-594"
