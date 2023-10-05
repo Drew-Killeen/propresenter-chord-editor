@@ -49,10 +49,15 @@ export default async function getLyrics(
           lyrics[cueUuid] = '';
         }
 
+        // Figure out where the text is, if it exists at all
         if (Object.keys(doc.content[i]).includes('value')) {
-          lyrics[cueUuid] += doc.content[i].value;
-        } else {
-          lyrics[cueUuid] += doc.content[i].content[0].value;
+          lyrics[cueUuid] += `\n${doc.content[i].value}`;
+        } else if (
+          'content' in doc.content[i] &&
+          doc.content[i].content.length > 0 &&
+          'value' in doc.content[i].content[0]
+        ) {
+          lyrics[cueUuid] += `\n${doc.content[i].content[0].value}`;
         }
       }
 
