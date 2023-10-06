@@ -5,12 +5,12 @@ export default function Libraries({ libraries }: { libraries: string[] }) {
 
   const libraryElements = libraries.map((library) => {
     return (
-      <>
+      <div key={library}>
         <button type="button" onClick={() => selectLibrary(library)}>
           {library}
         </button>
         <br />
-      </>
+      </div>
     );
   });
 
