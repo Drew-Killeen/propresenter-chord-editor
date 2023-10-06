@@ -50,7 +50,7 @@ export default async function getLyrics(
         }
 
         // Figure out where the text is, if it exists at all
-        if (Object.keys(doc.content[i]).includes('value')) {
+        if ('value' in doc.content[i]) {
           lyrics[cueUuid] += `\n${doc.content[i].value}`;
         } else if (
           'content' in doc.content[i] &&
