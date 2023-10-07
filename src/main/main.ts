@@ -104,9 +104,10 @@ const createWindow = async () => {
   ipcMain.on('selectDocument', (event, document) => {
     getLyrics(
       `${filePath}/${currentLibrary}/${document}`,
-      (err, lyrics, groups) => {
+      (err, lyrics, groups, chords) => {
         mainWindow?.webContents.send('getLyrics', lyrics);
         mainWindow?.webContents.send('getGroups', groups);
+        mainWindow?.webContents.send('getChords', chords);
       }
     );
   });

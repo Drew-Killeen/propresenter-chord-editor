@@ -1,12 +1,24 @@
 export default function Slide({
   id,
   label = '',
-  children,
+  chords = [{}],
+  lyrics,
 }: {
   id: number;
   label?: string;
-  children: any;
+  chords?: any;
+  lyrics: any;
 }) {
+  let editableText = lyrics;
+
+  for (let i = 0; i < chords.length; i++) {
+    if (chords[i].chord) {
+      editableText = `${editableText.slice(0, chords[i].range.end)}[${
+        chords[i].chord
+      }]${editableText.slice(chords[i].range.end)}`;
+    }
+  }
+
   return (
     <div className="slide">
       <div className="slide-header header">
@@ -15,7 +27,7 @@ export default function Slide({
         <div className="empty-spacer" />
       </div>
       <div className="slide-body" contentEditable>
-        {children}
+        {editableText}
       </div>
     </div>
   );

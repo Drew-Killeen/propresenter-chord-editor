@@ -5,10 +5,11 @@ import { load } from 'protobufjs';
 
 export default async function getLyrics(
   filepath: string,
-  callback: (error: any, lyrics?: any, groups?: any) => void
+  callback: (error: any, lyrics?: any, groups?: any, chords?: any) => void
 ) {
   let data: any;
   const lyrics: any = {};
+  const chords: any = {};
   const groups: any = {};
 
   try {
@@ -31,12 +32,19 @@ export default async function getLyrics(
       outputObject.cueGroups[i];
   }
 
-  // Get lyrics
+  // Get lyrics and chords
   for (let j = 0; j < outputObject.cues.length; j++) {
     const cueUuid: string = outputObject.cues[j].uuid.string;
     const textElement: any[] =
       outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
         .element.text.rtfData;
+
+    chords[cueUuid] =
+      outputObject.cues[
+        j
+      ].actions[0].slide.presentation.baseSlide.elements[0].element.text.attributes.customAttributes;
+
+    chords[cueUuid].sort((a, b) => b.range.end - a.range.end);
 
     parseRTF.string(textElement, (error: any, doc: any) => {
       if (error) {
@@ -65,7 +73,7 @@ export default async function getLyrics(
 
       // If on final iteration of loop, then run callback
       if (j >= outputObject.cues.length - 1) {
-        callback(null, lyrics, groups);
+        callback(null, lyrics, groups, chords);
       }
     });
   }

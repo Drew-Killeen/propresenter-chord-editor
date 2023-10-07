@@ -14,6 +14,7 @@ declare global {
 function Main() {
   const [lyric, setLyric] = useState<any>();
   const [groups, setGroups] = useState<any>({});
+  const [chords, setChords] = useState<any>({});
   const [libraries, setLibraries] = useState<string[]>([]);
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
@@ -26,9 +27,14 @@ function Main() {
     setGroups(value);
   });
 
+  window.api.getChords((_event: any, value: any) => {
+    setChords(value);
+  });
+
   window.api.getLibraries((_event: any, value: string[]) => {
     setLibraries(value);
   });
+
   window.api.getDocuments((_event: any, value: string[]) => {
     setDocuments(value);
   });
@@ -47,6 +53,7 @@ function Main() {
         lyrics={lyric}
         key={groups[key].group.uuid.string}
         cueGroup={groups[key]}
+        chords={chords}
       />
     );
   });

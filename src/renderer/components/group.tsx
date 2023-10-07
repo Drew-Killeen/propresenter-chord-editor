@@ -4,18 +4,23 @@ import Slide from './slide';
 export default function Group({
   cueGroup,
   lyrics,
+  chords,
 }: {
   cueGroup: any;
   lyrics: any;
+  chords: any;
 }) {
   const label: string = cueGroup.group.name;
 
   const slideElements = cueGroup.cueIdentifiers.map(
     (value: any, index: number) => {
       return (
-        <Slide key={value.string} id={index + 1}>
-          {lyrics[value.string]}
-        </Slide>
+        <Slide
+          key={value.string}
+          id={index + 1}
+          chords={value.string in chords ? chords[value.string] : {}}
+          lyrics={lyrics[value.string]}
+        />
       );
     }
   );
