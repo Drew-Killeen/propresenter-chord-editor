@@ -5,7 +5,7 @@ export default function Documents({ documents }: any) {
 
   const documentElements = documents.map((document: string) => {
     return (
-      <>
+      <div key={document}>
         <button
           type="button"
           onClick={() => {
@@ -15,7 +15,7 @@ export default function Documents({ documents }: any) {
           {document}
         </button>
         <br />
-      </>
+      </div>
     );
   });
 
