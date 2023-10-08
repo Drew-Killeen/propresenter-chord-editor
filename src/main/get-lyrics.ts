@@ -39,12 +39,23 @@ export default async function getLyrics(
       outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
         .element.text.rtfData;
 
-    chords[cueUuid] =
-      outputObject.cues[
-        j
-      ].actions[0].slide.presentation.baseSlide.elements[0].element.text.attributes.customAttributes;
+    const { customAttributes } =
+      outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
+        .element.text.attributes;
 
-    chords[cueUuid].sort((a, b) => b.range.end - a.range.end);
+    chords[cueUuid] = [];
+
+    if (customAttributes) {
+      for (let i = 0, k = 0; i < customAttributes.length; i++) {
+        if ('chord' in customAttributes[i]) {
+          chords[cueUuid][k] = customAttributes[i];
+          k++;
+        }
+      }
+      if (Array.isArray(chords[cueUuid]) && chords[cueUuid].length > 0) {
+        chords[cueUuid].sort((a, b) => b.range.end - a.range.end);
+      }
+    }
 
     parseRTF.string(textElement, (error: any, doc: any) => {
       if (error) {
