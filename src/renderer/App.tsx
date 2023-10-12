@@ -19,24 +19,8 @@ function Main() {
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
 
-  window.api.getLyrics((_event: any, value: any) => {
-    setLyric(value);
-  });
-
-  window.api.getGroups((_event: any, value: any) => {
-    setGroups(value);
-  });
-
-  window.api.getChords((_event: any, value: any) => {
-    setChords(value);
-  });
-
   window.api.getLibraries((_event: any, value: string[]) => {
     setLibraries(value);
-  });
-
-  window.api.getDocuments((_event: any, value: string[]) => {
-    setDocuments(value);
   });
 
   window.api.filePath((_event: any, value: string) => {
@@ -45,6 +29,18 @@ function Main() {
 
   const sendMessage = () => {
     window.api.selectNewFilePath();
+  };
+
+  const selectLibrary = async (libraryName: string) => {
+    const docs = await window.api.selectLibrary(libraryName);
+    setDocuments(docs);
+  };
+
+  const selectDocument = async (documentName: string) => {
+    const doc = await window.api.selectDocument(documentName);
+    setLyric(doc.lyrics);
+    setGroups(doc.groups);
+    setChords(doc.chords);
   };
 
   const groupElements = Object.keys(groups).map((key: string) => {
@@ -61,8 +57,8 @@ function Main() {
   return (
     <div id="main">
       <div className="left-panel panel">
-        <Libraries libraries={libraries} />
-        <Documents documents={documents} />
+        <Libraries libraries={libraries} selectLibrary={selectLibrary} />
+        <Documents documents={documents} selectDocument={selectDocument} />
         <div className="button-area">
           <div className="filepath-header">Current file path: </div>
           <div className="button-area-content">

@@ -1,12 +1,11 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 import parseRTF from 'rtf-parser';
 import fs from 'fs';
+import util from 'util';
 import { load } from 'protobufjs';
 
-export default async function getLyrics(
-  filepath: string,
-  callback: (error: any, lyrics?: any, groups?: any, chords?: any) => void
-) {
+export default async function getLyrics(filepath: string) {
   let data: any;
   const lyrics: any = {};
   const chords: any = {};
@@ -15,7 +14,7 @@ export default async function getLyrics(
   try {
     data = fs.readFileSync(filepath);
   } catch (err) {
-    callback(err);
+    console.log(err);
   }
 
   const proto = await load('proto/propresenter.proto');
@@ -57,35 +56,28 @@ export default async function getLyrics(
       }
     }
 
-    parseRTF.string(textElement, (error: any, doc: any) => {
-      if (error) {
-        callback(error);
-        throw error;
+    const asyncParseRTF = util.promisify(parseRTF.string);
+
+    const doc = await asyncParseRTF(textElement);
+
+    for (let i = 0; i < doc.content.length; i++) {
+      if (!lyrics[cueUuid]) {
+        lyrics[cueUuid] = '';
+      } else {
+        lyrics[cueUuid] += '\n';
       }
 
-      for (let i = 0; i < doc.content.length; i++) {
-        if (!lyrics[cueUuid]) {
-          lyrics[cueUuid] = '';
-        } else {
-          lyrics[cueUuid] += '\n';
-        }
-
-        // Figure out where the text is, if it exists at all
-        if ('value' in doc.content[i]) {
-          lyrics[cueUuid] += doc.content[i].value;
-        } else if (
-          'content' in doc.content[i] &&
-          doc.content[i].content.length > 0 &&
-          'value' in doc.content[i].content[0]
-        ) {
-          lyrics[cueUuid] += doc.content[i].content[0].value;
-        }
+      // Figure out where the text is, if it exists at all
+      if ('value' in doc.content[i]) {
+        lyrics[cueUuid] += doc.content[i].value;
+      } else if (
+        'content' in doc.content[i] &&
+        doc.content[i].content.length > 0 &&
+        'value' in doc.content[i].content[0]
+      ) {
+        lyrics[cueUuid] += doc.content[i].content[0].value;
       }
-
-      // If on final iteration of loop, then run callback
-      if (j >= outputObject.cues.length - 1) {
-        callback(null, lyrics, groups, chords);
-      }
-    });
+    }
   }
+  return { lyrics, chords, groups };
 }

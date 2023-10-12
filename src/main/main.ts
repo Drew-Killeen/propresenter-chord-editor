@@ -94,22 +94,15 @@ const createWindow = async () => {
       });
   });
 
-  ipcMain.on('selectLibrary', (event, library) => {
+  ipcMain.handle('selectLibrary', async (event, library) => {
     currentLibrary = library;
     const documents = getDocuments(`${filePath}/${currentLibrary}`);
-
-    mainWindow?.webContents.send('getDocuments', documents);
+    return documents;
   });
 
-  ipcMain.on('selectDocument', (event, document) => {
-    getLyrics(
-      `${filePath}/${currentLibrary}/${document}`,
-      (err, lyrics, groups, chords) => {
-        mainWindow?.webContents.send('getLyrics', lyrics);
-        mainWindow?.webContents.send('getGroups', groups);
-        mainWindow?.webContents.send('getChords', chords);
-      }
-    );
+  ipcMain.handle('selectDocument', async (event, document) => {
+    const doc = await getLyrics(`${filePath}/${currentLibrary}/${document}`);
+    return doc;
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));

@@ -1,8 +1,10 @@
-export default function Libraries({ libraries }: { libraries: string[] }) {
-  const selectLibrary = (libraryName: string) => {
-    window.api.selectLibrary(libraryName);
-  };
-
+export default function Libraries({
+  libraries,
+  selectLibrary,
+}: {
+  libraries: string[];
+  selectLibrary: (libraryName: string) => Promise<void>;
+}) {
   const libraryElements = libraries.map((library) => {
     return (
       <div key={library}>

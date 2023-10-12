@@ -1,8 +1,10 @@
-export default function Documents({ documents }: any) {
-  const selectDocument = (documentName: string) => {
-    window.api.selectDocument(documentName);
-  };
-
+export default function Documents({
+  documents,
+  selectDocument,
+}: {
+  documents: any;
+  selectDocument: (documentName: string) => Promise<void>;
+}) {
   const documentElements = documents.map((document: string) => {
     return (
       <div key={document}>
