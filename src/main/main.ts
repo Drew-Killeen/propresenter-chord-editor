@@ -84,10 +84,14 @@ const createWindow = async () => {
   ipcMain.on('selectNewFilePath', () => {
     selectFilePath()
       .then((newFilePath) => {
-        filePath = newFilePath;
-        const libraryList: string[] = getDirectories(filePath);
-        mainWindow?.webContents.send('filePath', filePath);
-        mainWindow?.webContents.send('getLibraries', libraryList);
+        if (!newFilePath.includes('ProPresenter')) {
+          mainWindow?.webContents.send('filepathIsValid', false);
+        } else {
+          filePath = newFilePath;
+          const libraryList: string[] = getDirectories(filePath);
+          mainWindow?.webContents.send('filePath', filePath);
+          mainWindow?.webContents.send('getLibraries', libraryList);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -117,16 +121,7 @@ const createWindow = async () => {
       mainWindow?.webContents.send('getLibraries', libraryList);
     } else {
       console.log('Directory does not exist.');
-      selectFilePath()
-        .then((value) => {
-          filePath = value;
-          libraryList = getDirectories(filePath);
-          mainWindow?.webContents.send('filePath', filePath);
-          mainWindow?.webContents.send('getLibraries', libraryList);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      mainWindow?.webContents.send('filepathIsValid', false);
     }
 
     if (!mainWindow) {

@@ -119,3 +119,26 @@ body {
 div {
   white-space: pre-wrap;
 }
+
+/***** ALERT ******/
+
+.alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #aeaeae;
+  box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.alert-header {
+  background: #343434;
+  color: #fff;
+  padding: 8px;
+  padding-left: 12px;
+  font-size: 14px;
+}
+
+.alert-content {
+  padding: 12px;
+}

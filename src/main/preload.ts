@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('api', {
   selectDocument: (document) => ipcRenderer.invoke('selectDocument', document),
   getLibraries: (callback) => ipcRenderer.on('getLibraries', callback),
   filePath: (callback) => ipcRenderer.on('filePath', callback),
+  filepathIsValid: (callback) => ipcRenderer.on('filepathIsValid', callback),
 });

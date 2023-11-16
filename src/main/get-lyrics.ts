@@ -58,7 +58,13 @@ export default async function getLyrics(filepath: string) {
 
     const asyncParseRTF = util.promisify(parseRTF.string);
 
-    const doc = await asyncParseRTF(textElement);
+    let doc;
+
+    try {
+      doc = await asyncParseRTF(textElement);
+    } catch {
+      console.log('error');
+    }
 
     for (let i = 0; i < doc.content.length; i++) {
       if (!lyrics[cueUuid]) {

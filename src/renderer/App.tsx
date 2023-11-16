@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Group from './components/group';
 import Libraries from './components/libraries';
 import Documents from './components/documents';
+import Alert from './components/alert';
 
 declare global {
   interface Window {
@@ -18,6 +19,7 @@ function Main() {
   const [libraries, setLibraries] = useState<string[]>([]);
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
+  const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(true);
 
   window.api.getLibraries((_event: any, value: string[]) => {
     setLibraries(value);
@@ -27,8 +29,16 @@ function Main() {
     setFilePath(value);
   });
 
-  const sendMessage = () => {
+  window.api.filepathIsValid((_event: any, value: string) => {
+    setShowFilepathAlert(!value);
+  });
+
+  const selectNewFilePath = () => {
     window.api.selectNewFilePath();
+  };
+
+  const saveDocument = () => {
+    console.log('not saved');
   };
 
   const selectLibrary = async (libraryName: string) => {
@@ -56,6 +66,18 @@ function Main() {
 
   return (
     <div id="main">
+      {showFilepathAlert && (
+        <Alert
+          onClose={() => {
+            setShowFilepathAlert(false);
+            selectNewFilePath();
+          }}
+          buttonLabel="Select"
+          alertLabel="No ProPresenter folder found."
+        >
+          To get started, select the ProPresenter folder from your system.
+        </Alert>
+      )}
       <div className="left-panel panel">
         <Libraries libraries={libraries} selectLibrary={selectLibrary} />
         <Documents documents={documents} selectDocument={selectDocument} />
@@ -63,10 +85,10 @@ function Main() {
           <div className="filepath-header">Current file path: </div>
           <div className="button-area-content">
             <div className="filepath">{filePath}</div>
-            <button type="button" onClick={sendMessage}>
+            <button type="button" onClick={selectNewFilePath}>
               Change file path
             </button>
-            <button type="button" onClick={sendMessage}>
+            <button type="button" onClick={saveDocument}>
               Save
             </button>
           </div>
