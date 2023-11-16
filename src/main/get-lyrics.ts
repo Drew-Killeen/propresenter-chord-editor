@@ -50,6 +50,7 @@ export default async function getLyrics(filepath: string): Promise<{
 
     const cueUuid: string = outputObject.cues[j].uuid.string;
 
+    // Custom attributes are used to store chords
     const { customAttributes } =
       outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
         .element.text.attributes;
@@ -60,14 +61,18 @@ export default async function getLyrics(filepath: string): Promise<{
       for (let i = 0, k = 0; i < customAttributes.length; i++) {
         if ('chord' in customAttributes[i]) {
           chords[cueUuid][k] = customAttributes[i];
+          if ('start' in chords[cueUuid][k].range === false) {
+            chords[cueUuid][k].range.start = 0;
+          }
           k++;
         }
       }
       if (Array.isArray(chords[cueUuid]) && chords[cueUuid].length > 0) {
-        chords[cueUuid].sort((a, b) => b.range.end - a.range.end);
+        chords[cueUuid].sort((a, b) => b.range.start - a.range.start);
       }
     }
 
+    // Parse RTF to retrieve lyrics
     const asyncParseRTF = util.promisify(parseRTF.string);
 
     let doc;
