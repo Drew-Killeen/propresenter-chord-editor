@@ -79,22 +79,46 @@ export default async function getLyrics(filepath: string): Promise<{
     }
 
     for (let i = 0; i < doc.content.length; i++) {
-      if (!lyrics[cueUuid]) {
-        lyrics[cueUuid] = '';
-      } else {
-        lyrics[cueUuid] += '\n';
-      }
+      let currentLyric: string = '';
 
       // Figure out where the text is, if it exists at all
       if ('value' in doc.content[i]) {
-        lyrics[cueUuid] += doc.content[i].value;
+        currentLyric = doc.content[i].value;
       } else if (
         'content' in doc.content[i] &&
         doc.content[i].content.length > 0 &&
         'value' in doc.content[i].content[0]
       ) {
-        lyrics[cueUuid] += doc.content[i].content[0].value;
+        currentLyric = doc.content[i].content[0].value;
       }
+
+      if (!lyrics[cueUuid]) {
+        lyrics[cueUuid] = '';
+      } else if (
+        // Check for various known characters that the RTF parser doesn't handle properly
+        // Not a great solution since it could cause issues in certain edge cases, but not much else can be done besides writing a custom parser
+        currentLyric !== '’' &&
+        currentLyric !== '‘' &&
+        currentLyric !== '“' &&
+        currentLyric !== '”' &&
+        currentLyric !== '…' &&
+        currentLyric !== '—' &&
+        currentLyric !== '–' &&
+        currentLyric.charAt(0) !== '?' &&
+        lyrics[cueUuid][lyrics[cueUuid].length - 1] !== '“' &&
+        lyrics[cueUuid][lyrics[cueUuid].length - 1] !== '‘' &&
+        lyrics[cueUuid][lyrics[cueUuid].length - 1] !== '’' &&
+        lyrics[cueUuid][lyrics[cueUuid].length - 1] !== '—' &&
+        lyrics[cueUuid][lyrics[cueUuid].length - 1] !== '–' &&
+        lyrics[cueUuid][lyrics[cueUuid].length - 1] !== '…'
+      ) {
+        lyrics[cueUuid] += '\n';
+      }
+
+      if (currentLyric.charAt(0) === '?') {
+        currentLyric = currentLyric.slice(1);
+      }
+      lyrics[cueUuid] += currentLyric;
     }
   }
 
