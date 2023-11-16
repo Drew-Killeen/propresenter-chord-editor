@@ -38,7 +38,7 @@ body {
 /****** LEFT PANEL *******/
 
 .libraries {
-  background-color: #707070;
+  background-color: #5c5c5c;
   flex: 2;
   height: 100%;
   overflow: auto;
@@ -46,14 +46,14 @@ body {
 
 .documents {
   flex: 6;
-  background: #5c5c5c;
+  background: #353535;
   height: 100%;
   overflow: auto;
 }
 
 .button-area {
   flex: 1;
-  background: #484848;
+  background: #353535;
   color: #fff;
 }
 
@@ -65,7 +65,7 @@ body {
 .documents-header,
 .filepath-header {
   padding: 8px;
-  background: #343434;
+  background: #1e1e1e;
   font-size: 12px;
 }
 
@@ -141,4 +141,36 @@ div {
 
 .alert-content {
   padding: 12px;
+}
+
+/***** BUTTONS ******/
+button,
+input[type='submit'],
+input[type='reset'] {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+.list-button {
+  margin-right: 2px;
+  padding: 3px;
+  color: #fff;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: 4px;
+  border: #00000000 solid 1px;
+  width: 100%;
+  text-align: left;
+}
+
+.list-button:hover {
+  background: #484848;
+  border: #aeaeae solid 1px;
 }

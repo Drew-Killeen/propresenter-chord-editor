@@ -8,7 +8,11 @@ export default function Libraries({
   const libraryElements = libraries.map((library) => {
     return (
       <div key={library}>
-        <button type="button" onClick={() => selectLibrary(library)}>
+        <button
+          type="button"
+          className="list-button"
+          onClick={() => selectLibrary(library)}
+        >
           {library}
         </button>
         <br />

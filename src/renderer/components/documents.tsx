@@ -10,13 +10,13 @@ export default function Documents({
       <div key={document}>
         <button
           type="button"
+          className="list-button"
           onClick={() => {
             selectDocument(document);
           }}
         >
           {document}
         </button>
-        <br />
       </div>
     );
   });
