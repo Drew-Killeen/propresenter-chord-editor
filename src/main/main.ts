@@ -15,6 +15,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import fs from 'fs';
 import os from 'os';
+import Store from 'electron-store';
 import MenuBuilder from './menu';
 import {
   getDirectories,
@@ -32,9 +33,15 @@ class AppUpdater {
   }
 }
 
+const store = new Store();
+
 let mainWindow: BrowserWindow | null = null;
 
-let filePath = `${os.homedir()}/Documents/ProPresenter/Libraries`;
+let filePath = store.get('filePath');
+
+if (!filePath) {
+  filePath = `${os.homedir()}/Documents/ProPresenter/Libraries`;
+}
 
 let currentLibrary = '';
 
@@ -73,7 +80,7 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
+    width: 1000,
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
@@ -87,6 +94,7 @@ const createWindow = async () => {
         if (!newFilePath.includes('ProPresenter')) {
           mainWindow?.webContents.send('filepathIsValid', false);
         } else {
+          store.set('filePath', newFilePath);
           filePath = newFilePath;
           const libraryList: string[] = getDirectories(filePath);
           mainWindow?.webContents.send('filePath', filePath);

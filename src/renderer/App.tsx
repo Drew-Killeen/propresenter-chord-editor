@@ -19,7 +19,7 @@ function Main() {
   const [libraries, setLibraries] = useState<string[]>([]);
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
-  const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(true);
+  const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(false);
 
   window.api.getLibraries((_event: any, value: string[]) => {
     setLibraries(value);
