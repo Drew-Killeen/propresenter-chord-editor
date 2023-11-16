@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import isEditValid from './isEditValid';
+
 export default function Slide({
   id,
   label = '',
@@ -7,9 +10,9 @@ export default function Slide({
   id: number;
   label?: string;
   chords?: any;
-  lyrics: any;
+  lyrics: string;
 }) {
-  let editableText = lyrics;
+  let defaultText = lyrics;
 
   // Insert chord in lyrics
   for (let i = 0; i < chords.length; i++) {
@@ -18,11 +21,19 @@ export default function Slide({
       if ('start' in chords[i].range) {
         chordPosition = chords[i].range.start;
       }
-      editableText = `${editableText.slice(0, chordPosition)}[${
+      defaultText = `${defaultText.slice(0, chordPosition)}[${
         chords[i].chord
-      }]${editableText.slice(chordPosition)}`;
+      }]${defaultText.slice(chordPosition)}`;
     }
   }
+
+  const [editableText, setEditableText] = useState<string>(defaultText);
+
+  const checkEdit = (text: string) => {
+    if (isEditValid(lyrics, text)) {
+      setEditableText(text);
+    }
+  };
 
   return (
     <div className="slide">
@@ -31,9 +42,11 @@ export default function Slide({
         <div className="slide-header-label">{label}</div>
         <div className="empty-spacer" />
       </div>
-      <div className="slide-body" contentEditable>
-        {editableText}
-      </div>
+      <textarea
+        className="slide-body"
+        value={editableText}
+        onChange={(e) => checkEdit(e.target.value)}
+      />
     </div>
   );
 }
