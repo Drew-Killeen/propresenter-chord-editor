@@ -10,6 +10,8 @@ export default function Group({
   lyrics: any;
   chords: any;
 }) {
+  if (!cueGroup.cueIdentifiers) return;
+
   const label: string = cueGroup.group.name;
 
   const slideElements = cueGroup.cueIdentifiers.map(
