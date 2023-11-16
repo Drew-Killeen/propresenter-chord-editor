@@ -5,7 +5,11 @@ import fs from 'fs';
 import util from 'util';
 import { load } from 'protobufjs';
 
-export default async function getLyrics(filepath: string) {
+export default async function getLyrics(filepath: string): Promise<{
+  lyrics: any;
+  chords: any;
+  groups: any;
+}> {
   let data: any;
   const lyrics: any = {};
   const chords: any = {};
@@ -25,6 +29,8 @@ export default async function getLyrics(filepath: string) {
 
   const outputObject = messageType.toObject(message);
 
+  if (!outputObject.cueGroups) return { lyrics, chords, groups };
+
   // Get group names and colors
   for (let i = 0; i < outputObject.cueGroups.length; i++) {
     groups[outputObject.cueGroups[i].group.uuid.string] =
@@ -33,10 +39,16 @@ export default async function getLyrics(filepath: string) {
 
   // Get lyrics and chords
   for (let j = 0; j < outputObject.cues.length; j++) {
+    let textElement: any[];
+    try {
+      textElement =
+        outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
+          .element.text.rtfData;
+    } catch {
+      continue;
+    }
+
     const cueUuid: string = outputObject.cues[j].uuid.string;
-    const textElement: any[] =
-      outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
-        .element.text.rtfData;
 
     const { customAttributes } =
       outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
@@ -85,5 +97,6 @@ export default async function getLyrics(filepath: string) {
       }
     }
   }
+
   return { lyrics, chords, groups };
 }
