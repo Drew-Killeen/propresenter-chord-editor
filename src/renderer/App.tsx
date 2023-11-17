@@ -85,12 +85,22 @@ function Main() {
           <div className="filepath-header">Current file path: </div>
           <div className="button-area-content">
             <div className="filepath">{filePath}</div>
-            <button type="button" onClick={selectNewFilePath}>
-              Change file path
-            </button>
-            <button type="button" onClick={saveDocument}>
-              Save
-            </button>
+            <div className="button-area-spacer">
+              <button
+                className="button button-standard"
+                type="button"
+                onClick={selectNewFilePath}
+              >
+                Change file path
+              </button>
+              <button
+                className="button button-standard"
+                type="button"
+                onClick={saveDocument}
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
       </div>

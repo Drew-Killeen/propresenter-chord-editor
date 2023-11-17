@@ -61,6 +61,11 @@ body {
   padding: 10px;
 }
 
+.button-area-spacer {
+  display: flex;
+  gap: 8px;
+}
+
 .libraries-header,
 .documents-header,
 .filepath-header {
@@ -156,6 +161,12 @@ textarea {
   padding: 12px;
 }
 
+.alert-button-spacer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
 /***** BUTTONS ******/
 button,
 input[type='submit'],
@@ -186,4 +197,31 @@ input[type='reset'] {
 .list-button:hover {
   background: #484848;
   border: #aeaeae solid 1px;
+}
+
+.button {
+  text-align: center !important;
+  flex: 1;
+  color: #fff;
+  padding: 4px;
+  border-radius: 4px;
+  text-align: left;
+  margin-bottom: 6px;
+  margin-top: 6px;
+}
+
+.button-standard {
+  background-color: #6e6e6e;
+}
+
+.button-standard:hover {
+  background-color: #484848;
+}
+
+.button-inverted {
+  background-color: #484848;
+}
+
+.button-inverted:hover {
+  background-color: #6e6e6e;
 }
