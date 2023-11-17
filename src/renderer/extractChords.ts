@@ -5,22 +5,24 @@ export default function extractChords(lyrics: any) {
   const cueUuids = Object.keys(lyrics);
 
   for (let j = 0; j < cueUuids.length; j++) {
+    // Remove new line characters
+    lyrics[cueUuids[j]] = lyrics[cueUuids[j]].replace(/\n/g, ' ');
+
     const chordMatches = lyrics[cueUuids[j]].match(/\[(.*?)\]/g);
     if (!chordMatches) continue;
-
-    // Keep track of the length of the chords we've already found
-    let chordLengthOffset = 0;
 
     tempChords[cueUuids[j]] = chordMatches.map((chordMatch: any) => {
       const chord = chordMatch.slice(1, -1);
       const chordPosition = lyrics[cueUuids[j]].indexOf(chordMatch);
-      chordLengthOffset += chordMatch.length;
+
+      // Remove chords as they're found
+      lyrics[cueUuids[j]] = lyrics[cueUuids[j]].replace(chordMatch, '');
 
       return {
         chord,
         range: {
-          start: chordPosition - chordLengthOffset + chordMatch.length,
-          end: chordPosition + chordMatch.length * 2 - chordLengthOffset,
+          start: chordPosition,
+          end: chordPosition + chordMatch.length,
         },
       };
     });
