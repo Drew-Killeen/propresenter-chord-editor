@@ -1,40 +1,19 @@
-import { useState } from 'react';
-import isEditValid from './isEditValid';
+/* eslint-disable no-plusplus */
+/* eslint-disable react/require-default-props */
 
 export default function Slide({
   id,
   label = '',
-  chords = [{}],
   lyrics,
+  cueUuid,
+  onEdit,
 }: {
   id: number;
   label?: string;
-  chords?: any;
   lyrics: string;
+  cueUuid: string;
+  onEdit: (newLyrics: string, cueUuid: string) => void;
 }) {
-  let defaultText = lyrics;
-
-  // Insert chord in lyrics
-  for (let i = 0; i < chords.length; i++) {
-    if (chords[i].chord) {
-      let chordPosition = 0;
-      if ('start' in chords[i].range) {
-        chordPosition = chords[i].range.start;
-      }
-      defaultText = `${defaultText.slice(0, chordPosition)}[${
-        chords[i].chord
-      }]${defaultText.slice(chordPosition)}`;
-    }
-  }
-
-  const [editableText, setEditableText] = useState<string>(defaultText);
-
-  const checkEdit = (event: any) => {
-    if (isEditValid(lyrics, event.target.value)) {
-      setEditableText(event.target.value);
-    }
-  };
-
   const insertNewChord = (event: any) => {
     if (event.key === '[') {
       event.preventDefault();
@@ -42,7 +21,7 @@ export default function Slide({
       const textBeforeCursor = event.target.value.substring(0, cursorPosition);
       const textAfterCursor = event.target.value.substring(cursorPosition);
       const newText = `${textBeforeCursor}[]${textAfterCursor}`;
-      setEditableText(newText);
+      onEdit(newText, cueUuid);
     }
   };
 
@@ -55,8 +34,8 @@ export default function Slide({
       </div>
       <textarea
         className="slide-body"
-        value={editableText}
-        onChange={checkEdit}
+        value={lyrics}
+        onChange={(event) => onEdit(event.target.value, cueUuid)}
         onKeyDown={insertNewChord}
       />
     </div>
