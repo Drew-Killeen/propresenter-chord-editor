@@ -29,9 +29,20 @@ export default function Slide({
 
   const [editableText, setEditableText] = useState<string>(defaultText);
 
-  const checkEdit = (text: string) => {
-    if (isEditValid(lyrics, text)) {
-      setEditableText(text);
+  const checkEdit = (event: any) => {
+    if (isEditValid(lyrics, event.target.value)) {
+      setEditableText(event.target.value);
+    }
+  };
+
+  const insertNewChord = (event: any) => {
+    if (event.key === '[') {
+      event.preventDefault();
+      const cursorPosition = event.target.selectionStart;
+      const textBeforeCursor = event.target.value.substring(0, cursorPosition);
+      const textAfterCursor = event.target.value.substring(cursorPosition);
+      const newText = `${textBeforeCursor}[]${textAfterCursor}`;
+      setEditableText(newText);
     }
   };
 
@@ -45,7 +56,8 @@ export default function Slide({
       <textarea
         className="slide-body"
         value={editableText}
-        onChange={(e) => checkEdit(e.target.value)}
+        onChange={checkEdit}
+        onKeyDown={insertNewChord}
       />
     </div>
   );
