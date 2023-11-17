@@ -1,5 +1,3 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-plusplus */
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useState } from 'react';
@@ -7,7 +5,9 @@ import Group from './components/group';
 import Libraries from './components/libraries';
 import Documents from './components/documents';
 import Alert from './components/alert';
-import isEditValid from './components/isEditValid';
+import isEditValid from './isEditValid';
+import insertChords from './insertChords';
+import extractChords from './extractChords';
 
 declare global {
   interface Window {
@@ -41,37 +41,12 @@ function Main() {
   };
 
   const saveDocument = () => {
-    console.log('not saved');
+    const newChords: any = extractChords(editableLyrics);
   };
 
   const selectLibrary = async (libraryName: string) => {
     const docs = await window.api.selectLibrary(libraryName);
     setDocuments(docs);
-  };
-
-  const insertChords = (originalLyrics: any, chords: any) => {
-    const tempEditableLyrics = { ...originalLyrics };
-    const cueUuids = Object.keys(originalLyrics);
-
-    for (let j = 0; j < cueUuids.length; j++) {
-      if (!chords[cueUuids[j]] || chords[cueUuids[j]].length === 0) continue;
-
-      for (let i = 0; i < chords[cueUuids[j]].length; i++) {
-        if (chords[cueUuids[j]][i].chord) {
-          let chordPosition = 0;
-          if ('start' in chords[cueUuids[j]][i].range) {
-            chordPosition = chords[cueUuids[j]][i].range.start;
-          }
-          tempEditableLyrics[cueUuids[j]] = `${tempEditableLyrics[
-            cueUuids[j]
-          ].slice(0, chordPosition)}[${
-            chords[cueUuids[j]][i].chord
-          }]${tempEditableLyrics[cueUuids[j]].slice(chordPosition)}`;
-        }
-      }
-    }
-
-    return tempEditableLyrics;
   };
 
   const selectDocument = async (documentName: string) => {
