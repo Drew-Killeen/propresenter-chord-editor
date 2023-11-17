@@ -4,6 +4,7 @@ import parseRTF from 'rtf-parser';
 import fs from 'fs';
 import util from 'util';
 import { load } from 'protobufjs';
+import path from 'path';
 
 export default async function getLyrics(filepath: string): Promise<{
   lyrics: any;
@@ -21,7 +22,16 @@ export default async function getLyrics(filepath: string): Promise<{
     console.log(err);
   }
 
-  const proto = await load('proto/propresenter.proto');
+  let protoPath = 'assets/proto/propresenter.proto';
+
+  if (process.env.NODE_ENV === 'production') {
+    protoPath = path.join(
+      process.resourcesPath,
+      'assets/proto/propresenter.proto'
+    );
+  }
+
+  const proto = await load(protoPath);
 
   const messageType = proto.lookupType('rv.data.Presentation');
 

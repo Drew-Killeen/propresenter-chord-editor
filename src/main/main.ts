@@ -10,9 +10,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import Store from 'electron-store';
@@ -25,14 +23,6 @@ import {
 } from './util';
 import getLyrics from './get-lyrics';
 
-class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
-
 const store = new Store();
 
 let mainWindow: BrowserWindow | null = null;
@@ -44,6 +34,11 @@ if (!filePath) {
 }
 
 let currentLibrary = '';
+
+if (process.env.NODE_ENV === 'production') {
+  const sourceMapSupport = require('source-map-support');
+  sourceMapSupport.install();
+}
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -80,13 +75,17 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1000,
+    width: 1024,
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.ts'),
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+  mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   ipcMain.on('selectNewFilePath', () => {
     selectFilePath()
@@ -116,8 +115,6 @@ const createWindow = async () => {
     const doc = await getLyrics(`${filePath}/${currentLibrary}/${document}`);
     return doc;
   });
-
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
     let libraryList: string[];
@@ -149,9 +146,11 @@ const createWindow = async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
+  // Open urls in the user's browser
+  mainWindow.webContents.setWindowOpenHandler((edata) => {
+    shell.openExternal(edata.url);
+    return { action: 'deny' };
+  });
 };
 
 /**
