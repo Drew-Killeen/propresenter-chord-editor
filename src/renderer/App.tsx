@@ -23,6 +23,7 @@ function Main() {
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
   const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(false);
+  const [currentDocumentName, setCurrentDocumentName] = useState<string>('');
 
   window.api.getLibraries((_event: any, value: string[]) => {
     setLibraries(value);
@@ -42,6 +43,7 @@ function Main() {
 
   const saveDocument = () => {
     const newChords: any = extractChords(editableLyrics);
+    window.api.sendNewChords({ newChords, documentName: currentDocumentName });
   };
 
   const selectLibrary = async (libraryName: string) => {
@@ -51,6 +53,7 @@ function Main() {
 
   const selectDocument = async (documentName: string) => {
     const doc = await window.api.selectDocument(documentName);
+    setCurrentDocumentName(documentName);
     setLyrics(doc.lyrics);
     setGroups(doc.groups);
     setEditableLyrics(insertChords(doc.lyrics, doc.chords));

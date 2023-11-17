@@ -22,6 +22,8 @@ import {
   selectFilePath,
 } from './util';
 import getLyrics from './get-lyrics';
+import saveChords from './save-chords';
+import getOriginalPresentation from './get-original-presentation';
 
 const store = new Store();
 
@@ -103,6 +105,19 @@ const createWindow = async () => {
       .catch((err) => {
         console.log(err);
       });
+  });
+
+  ipcMain.on('sendNewChords', (event, { newChords, documentName }) => {
+    getOriginalPresentation(`${filePath}/${currentLibrary}/${documentName}`)
+      .then((originalPresentation) => {
+        console.log(originalPresentation);
+        saveChords(originalPresentation, newChords)
+          .then((output) => {
+            console.log(output);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
   });
 
   ipcMain.handle('selectLibrary', async (event, library) => {
