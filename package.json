@@ -113,7 +113,7 @@
   },
   "build": {
     "productName": "ProPresenterChordEditor",
-    "appId": "org.erb.ProPresenterChordEditor",
+    "appId": "com.ProPresenterChordEditor",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
