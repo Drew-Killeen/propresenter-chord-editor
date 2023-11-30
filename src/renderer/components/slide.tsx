@@ -1,6 +1,6 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable react/require-default-props */
-
+import { useLayoutEffect, useRef } from 'react';
 import isEditValid from 'renderer/isEditValid';
 
 export default function Slide({
@@ -18,6 +18,19 @@ export default function Slide({
   cueUuid: string;
   onEdit: (newLyrics: string, cueUuid: string) => void;
 }) {
+  const textareaRef = useRef(null);
+
+  useLayoutEffect(() => {
+    // Reset height - important to shrink on delete
+    if (textareaRef && textareaRef.current) {
+      textareaRef.current.style.height = 'inherit';
+      // Set height
+      textareaRef.current.style.height = `${
+        textareaRef.current.scrollHeight - 20
+      }px`;
+    }
+  }, [lyricsPlusChords]);
+
   const insertNewChord = (event: any) => {
     if (event.key === '[') {
       event.preventDefault();
@@ -58,6 +71,7 @@ export default function Slide({
       </div>
       <textarea
         className="slide-body"
+        ref={textareaRef}
         value={lyricsPlusChords}
         onChange={onChange}
         onKeyDown={insertNewChord}

@@ -126,9 +126,10 @@ div {
 }
 
 textarea {
-  width: 100%;
+  width: 90%;
   height: 100%;
   resize: none;
+  overflow: hidden;
   border: none;
   outline: none;
   background: #aeaeae;
