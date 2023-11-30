@@ -5,7 +5,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('api', {
   selectNewFilePath: (message: any) =>
     ipcRenderer.send('selectNewFilePath', message),
-  saveDocument: (message: any) => ipcRenderer.send('saveDocument', message),
+  saveDocument: (message: any) => ipcRenderer.invoke('saveDocument', message),
   selectLibrary: (library: any) => ipcRenderer.invoke('selectLibrary', library),
   selectDocument: (document: any) =>
     ipcRenderer.invoke('selectDocument', document),

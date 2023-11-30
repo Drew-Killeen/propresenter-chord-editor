@@ -107,16 +107,29 @@ const createWindow = async () => {
       });
   });
 
-  ipcMain.on('saveDocument', (event, { newChords, documentName }) => {
-    getOriginalPresentation(`${filePath}/${currentLibrary}/${documentName}`)
-      .then((originalPresentation) => {
-        saveChords({
-          originalPresentation,
-          newChords,
-          filePath: `${filePath}/${currentLibrary}/${documentName}`,
-        });
-      })
-      .catch((err) => console.log(err));
+  ipcMain.handle('saveDocument', async (event, { newChords, documentName }) => {
+    let originalPresentation;
+    try {
+      originalPresentation = await getOriginalPresentation(
+        `${filePath}/${currentLibrary}/${documentName}`
+      );
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+
+    try {
+      await saveChords({
+        originalPresentation,
+        newChords,
+        filePath: `${filePath}/${currentLibrary}/${documentName}`,
+      });
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+
+    return true;
   });
 
   ipcMain.handle('selectLibrary', async (event, library) => {

@@ -23,6 +23,8 @@ function Main() {
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
   const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(false);
+  const [saveIsSuccessful, setSaveIsSuccessful] = useState<boolean>(false);
+  const [showSaveAlert, setShowSaveAlert] = useState<boolean>(false);
   const [currentDocumentName, setCurrentDocumentName] = useState<string>('');
 
   window.api.getLibraries((_event: any, value: string[]) => {
@@ -41,10 +43,15 @@ function Main() {
     window.api.selectNewFilePath();
   };
 
-  const saveDocument = () => {
+  const saveDocument = async () => {
     if (!currentDocumentName) return;
     const newChords: any = extractChords(editableLyrics);
-    window.api.saveDocument({ newChords, documentName: currentDocumentName });
+    const response = await window.api.saveDocument({
+      newChords,
+      documentName: currentDocumentName,
+    });
+    setSaveIsSuccessful(response);
+    setShowSaveAlert(true);
   };
 
   const selectLibrary = async (libraryName: string) => {
@@ -92,6 +99,19 @@ function Main() {
           alertLabel="No ProPresenter folder found."
         >
           To get started, select the ProPresenter folder from your system.
+        </Alert>
+      )}
+      {showSaveAlert && (
+        <Alert
+          onClose={() => {
+            setShowSaveAlert(false);
+          }}
+          buttonLabel="Dismiss"
+          alertLabel={saveIsSuccessful ? 'Save successful!' : 'Save failed.'}
+        >
+          {saveIsSuccessful
+            ? 'Your changes have been saved.'
+            : 'Error saving file. Please try again.'}
         </Alert>
       )}
       <div className="left-panel panel">
