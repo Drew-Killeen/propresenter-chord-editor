@@ -42,6 +42,7 @@ function Main() {
   };
 
   const saveDocument = () => {
+    if (!currentDocumentName) return;
     const newChords: any = extractChords(editableLyrics);
     window.api.saveDocument({ newChords, documentName: currentDocumentName });
   };
