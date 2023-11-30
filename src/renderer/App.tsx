@@ -43,7 +43,7 @@ function Main() {
 
   const saveDocument = () => {
     const newChords: any = extractChords(editableLyrics);
-    window.api.sendNewChords({ newChords, documentName: currentDocumentName });
+    window.api.saveDocument({ newChords, documentName: currentDocumentName });
   };
 
   const selectLibrary = async (libraryName: string) => {

@@ -107,15 +107,14 @@ const createWindow = async () => {
       });
   });
 
-  ipcMain.on('sendNewChords', (event, { newChords, documentName }) => {
+  ipcMain.on('saveDocument', (event, { newChords, documentName }) => {
     getOriginalPresentation(`${filePath}/${currentLibrary}/${documentName}`)
       .then((originalPresentation) => {
-        console.log(originalPresentation);
-        saveChords(originalPresentation, newChords)
-          .then((output) => {
-            console.log(output);
-          })
-          .catch((err) => console.log(err));
+        saveChords({
+          originalPresentation,
+          newChords,
+          filePath: `${filePath}/${currentLibrary}/${documentName}`,
+        });
       })
       .catch((err) => console.log(err));
   });

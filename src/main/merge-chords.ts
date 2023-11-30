@@ -2,9 +2,7 @@
 /* eslint-disable no-plusplus */
 
 export default function mergeChords(presentation: any, chords: any) {
-  // Loop over all chords
   for (let i = 0; i < Object.keys(chords).length; i++) {
-    // Get the UUID of the current chord
     const cueUuid = Object.keys(chords)[i];
 
     // Find the index of the cue in the presentation that matches the chord UUID
