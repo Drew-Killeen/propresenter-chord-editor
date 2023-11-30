@@ -1,12 +1,19 @@
+import { IpcRendererEvent } from 'electron';
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
-  selectNewFilePath: (message) =>
+  selectNewFilePath: (message: any) =>
     ipcRenderer.send('selectNewFilePath', message),
-  sendNewChords: (message) => ipcRenderer.send('sendNewChords', message),
-  selectLibrary: (library) => ipcRenderer.invoke('selectLibrary', library),
-  selectDocument: (document) => ipcRenderer.invoke('selectDocument', document),
-  getLibraries: (callback) => ipcRenderer.on('getLibraries', callback),
-  filePath: (callback) => ipcRenderer.on('filePath', callback),
-  filepathIsValid: (callback) => ipcRenderer.on('filepathIsValid', callback),
+  saveDocument: (message: any) => ipcRenderer.send('saveDocument', message),
+  selectLibrary: (library: any) => ipcRenderer.invoke('selectLibrary', library),
+  selectDocument: (document: any) =>
+    ipcRenderer.invoke('selectDocument', document),
+  getLibraries: (callback: (event: IpcRendererEvent, ...args: any[]) => void) =>
+    ipcRenderer.on('getLibraries', callback),
+  filePath: (callback: (event: IpcRendererEvent, ...args: any[]) => void) =>
+    ipcRenderer.on('filePath', callback),
+  filepathIsValid: (
+    callback: (event: IpcRendererEvent, ...args: any[]) => void
+  ) => ipcRenderer.on('filepathIsValid', callback),
 });
