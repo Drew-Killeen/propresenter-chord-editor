@@ -2,6 +2,7 @@
 /* eslint-disable react/require-default-props */
 import { useLayoutEffect, useRef } from 'react';
 import isEditValid from 'renderer/isEditValid';
+import findLengthToCharacter from './find-length-to-character';
 
 export default function Slide({
   id,
@@ -31,10 +32,12 @@ export default function Slide({
     }
   }, [lyricsPlusChords]);
 
-  const insertNewChord = (event: any) => {
+  // TODO: Refactor messy code
+  const editChord = (event: any) => {
+    let cursorPosition = event.target.selectionStart;
+
     if (event.key === '[') {
       event.preventDefault();
-      const cursorPosition = event.target.selectionStart;
       const textBeforeCursor = event.target.value.substring(0, cursorPosition);
       const textAfterCursor = event.target.value.substring(cursorPosition);
       const newText = `${textBeforeCursor}[]${textAfterCursor}`;
@@ -43,6 +46,92 @@ export default function Slide({
       // Preserve cursor position
       setTimeout(() => {
         event.target.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+      }, 0);
+    } else if (event.keyCode === 8) {
+      // Check if we're deleting a chord via backspace key
+      const textBeforeCursor = event.target.value.substring(0, cursorPosition);
+      const textAfterCursor = event.target.value.substring(cursorPosition);
+
+      if (textBeforeCursor.endsWith('[')) {
+        event.preventDefault();
+        const chordLength = findLengthToCharacter({
+          text: textAfterCursor,
+          character: ']',
+          index: 0,
+        });
+
+        const newText = `${textBeforeCursor.substring(
+          0,
+          textBeforeCursor.length - 1
+        )}${textAfterCursor.substring(
+          chordLength + 1,
+          textAfterCursor.length
+        )}`;
+
+        onEdit(newText, cueUuid);
+        cursorPosition -= 1;
+      } else if (textBeforeCursor.endsWith(']')) {
+        event.preventDefault();
+        const chordLength = findLengthToCharacter({
+          text: textBeforeCursor,
+          character: '[',
+          direction: 'backward',
+          index: textBeforeCursor.length - 2,
+        });
+
+        const newText = `${textBeforeCursor.substring(
+          0,
+          textBeforeCursor.length - chordLength - 2
+        )}${textAfterCursor}`;
+
+        onEdit(newText, cueUuid);
+        cursorPosition = cursorPosition - chordLength - 2;
+      }
+
+      // Preserve cursor position
+      setTimeout(() => {
+        event.target.setSelectionRange(cursorPosition, cursorPosition);
+      }, 0);
+    } else if (event.keyCode === 46) {
+      // Check if we're deleting a chord via delete key
+      const textBeforeCursor = event.target.value.substring(0, cursorPosition);
+      const textAfterCursor = event.target.value.substring(cursorPosition);
+
+      if (textAfterCursor.startsWith(']')) {
+        event.preventDefault();
+        const chordLength = findLengthToCharacter({
+          text: textBeforeCursor,
+          character: '[',
+          direction: 'backward',
+          index: textBeforeCursor.length - 1,
+        });
+
+        const newText = `${textBeforeCursor.substring(
+          0,
+          textBeforeCursor.length - chordLength - 1
+        )}${textAfterCursor.substring(1, textAfterCursor.length)}`;
+
+        onEdit(newText, cueUuid);
+        cursorPosition = cursorPosition - chordLength - 1;
+      } else if (textAfterCursor.startsWith('[')) {
+        event.preventDefault();
+        const chordLength = findLengthToCharacter({
+          text: textAfterCursor,
+          character: ']',
+          index: 1,
+        });
+
+        const newText = `${textBeforeCursor}${textAfterCursor.substring(
+          chordLength + 2,
+          textAfterCursor.length
+        )}`;
+
+        onEdit(newText, cueUuid);
+      }
+
+      // Preserve cursor position
+      setTimeout(() => {
+        event.target.setSelectionRange(cursorPosition, cursorPosition);
       }, 0);
     }
   };
@@ -74,7 +163,7 @@ export default function Slide({
         ref={textareaRef}
         value={lyricsPlusChords}
         onChange={onChange}
-        onKeyDown={insertNewChord}
+        onKeyDown={editChord}
       />
     </div>
   );
