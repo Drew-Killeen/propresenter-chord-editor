@@ -1,16 +1,20 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable react/require-default-props */
 
+import isEditValid from 'renderer/isEditValid';
+
 export default function Slide({
   id,
   label = '',
-  lyrics,
+  lyricsPlusChords,
+  originalLyrics,
   cueUuid,
   onEdit,
 }: {
   id: number;
   label?: string;
-  lyrics: string;
+  lyricsPlusChords: string;
+  originalLyrics: string;
   cueUuid: string;
   onEdit: (newLyrics: string, cueUuid: string) => void;
 }) {
@@ -22,7 +26,27 @@ export default function Slide({
       const textAfterCursor = event.target.value.substring(cursorPosition);
       const newText = `${textBeforeCursor}[]${textAfterCursor}`;
       onEdit(newText, cueUuid);
+
+      // Preserve cursor position
+      setTimeout(() => {
+        event.target.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+      }, 0);
     }
+  };
+
+  const onChange = (event: any) => {
+    event.preventDefault();
+    const newLyrics = event.target.value;
+    let cursorPosition = event.target.selectionStart - 1;
+    if (isEditValid(originalLyrics, newLyrics)) {
+      onEdit(newLyrics, cueUuid);
+      cursorPosition += 1;
+    }
+
+    // Preserve cursor position
+    setTimeout(() => {
+      event.target.setSelectionRange(cursorPosition, cursorPosition);
+    }, 0);
   };
 
   return (
@@ -34,8 +58,8 @@ export default function Slide({
       </div>
       <textarea
         className="slide-body"
-        value={lyrics}
-        onChange={(event) => onEdit(event.target.value, cueUuid)}
+        value={lyricsPlusChords}
+        onChange={onChange}
         onKeyDown={insertNewChord}
       />
     </div>

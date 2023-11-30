@@ -3,11 +3,13 @@ import Slide from './slide';
 
 export default function Group({
   cueGroup,
-  lyrics,
+  lyricsPlusChords,
+  originalLyrics,
   onEdit,
 }: {
   cueGroup: any;
-  lyrics: any;
+  lyricsPlusChords: any;
+  originalLyrics: any;
   onEdit: (newLyrics: string, cueUuid: string) => void;
 }) {
   if (!cueGroup.cueIdentifiers) return <></>;
@@ -20,7 +22,8 @@ export default function Group({
         <Slide
           key={value.string}
           id={index + 1}
-          lyrics={lyrics[value.string]}
+          lyricsPlusChords={lyricsPlusChords[value.string]}
+          originalLyrics={originalLyrics[value.string]}
           cueUuid={value.string}
           onEdit={onEdit}
         />

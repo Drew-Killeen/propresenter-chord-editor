@@ -70,7 +70,8 @@ function Main() {
   const groupElements = Object.keys(groups).map((key: string) => {
     return (
       <Group
-        lyrics={editableLyrics}
+        lyricsPlusChords={editableLyrics}
+        originalLyrics={lyrics}
         key={groups[key].group.uuid.string}
         cueGroup={groups[key]}
         onEdit={updateLyrics}
