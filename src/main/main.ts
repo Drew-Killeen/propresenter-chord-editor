@@ -20,10 +20,10 @@ import {
   getDocuments,
   resolveHtmlPath,
   selectFilePath,
-} from './util';
-import getLyrics from './get-lyrics';
-import saveChords from './save-chords';
-import getOriginalPresentation from './get-original-presentation';
+} from './utilities/util';
+import getLyrics from './utilities/get-lyrics';
+import saveChords from './utilities/save-chords';
+import getOriginalPresentation from './utilities/get-original-presentation';
 
 const store = new Store();
 

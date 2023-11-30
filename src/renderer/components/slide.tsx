@@ -1,8 +1,8 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable react/require-default-props */
 import { useLayoutEffect, useRef } from 'react';
-import isEditValid from 'renderer/isEditValid';
-import findLengthToCharacter from './find-length-to-character';
+import isEditValid from 'renderer/utilities/is-edit-valid';
+import findLengthToCharacter from '../utilities/find-length-to-character';
 
 export default function Slide({
   id,

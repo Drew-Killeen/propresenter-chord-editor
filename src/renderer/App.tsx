@@ -5,9 +5,9 @@ import Group from './components/group';
 import Libraries from './components/libraries';
 import Documents from './components/documents';
 import Alert from './components/alert';
-import isEditValid from './isEditValid';
-import insertChords from './insertChords';
-import extractChords from './extractChords';
+import isEditValid from './utilities/is-edit-valid';
+import insertChords from './utilities/insert-chords';
+import extractChords from './utilities/extract-chords';
 
 declare global {
   interface Window {
