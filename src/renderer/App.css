@@ -83,6 +83,10 @@ body {
   background: #484848;
 }
 
+.selected-library {
+  background: #484848;
+}
+
 /***** CENTER PANEL ******/
 
 .group {

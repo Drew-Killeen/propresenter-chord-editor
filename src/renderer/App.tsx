@@ -26,6 +26,7 @@ function Main() {
   const [saveIsSuccessful, setSaveIsSuccessful] = useState<boolean>(false);
   const [showSaveAlert, setShowSaveAlert] = useState<boolean>(false);
   const [currentDocumentName, setCurrentDocumentName] = useState<string>('');
+  const [currentLibraryName, setCurrentLibraryName] = useState<string>('');
 
   window.api.getLibraries((_event: any, value: string[]) => {
     setLibraries(value);
@@ -56,6 +57,7 @@ function Main() {
 
   const selectLibrary = async (libraryName: string) => {
     const docs = await window.api.selectLibrary(libraryName);
+    setCurrentLibraryName(libraryName);
     setDocuments(docs);
   };
 
@@ -115,7 +117,11 @@ function Main() {
         </Alert>
       )}
       <div className="left-panel panel">
-        <Libraries libraries={libraries} selectLibrary={selectLibrary} />
+        <Libraries
+          libraries={libraries}
+          currentLibrary={currentLibraryName}
+          selectLibrary={selectLibrary}
+        />
         <Documents
           documents={documents}
           currentDocument={currentDocumentName}

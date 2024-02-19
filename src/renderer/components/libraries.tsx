@@ -1,8 +1,10 @@
 export default function Libraries({
   libraries,
+  currentLibrary,
   selectLibrary,
 }: {
   libraries: string[];
+  currentLibrary: string;
   selectLibrary: (libraryName: string) => Promise<void>;
 }) {
   const libraryElements = libraries.map((library) => {
@@ -10,7 +12,9 @@ export default function Libraries({
       <div key={library}>
         <button
           type="button"
-          className="list-button"
+          className={`${
+            currentLibrary === library ? 'selected-library' : ''
+          } list-button`}
           onClick={() => selectLibrary(library)}
         >
           {library}
