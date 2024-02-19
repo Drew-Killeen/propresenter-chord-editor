@@ -79,6 +79,10 @@ body {
   padding: 8px;
 }
 
+.selected-document {
+  background: #484848;
+}
+
 /***** CENTER PANEL ******/
 
 .group {

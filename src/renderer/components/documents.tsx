@@ -1,8 +1,10 @@
 export default function Documents({
   documents,
+  currentDocument,
   selectDocument,
 }: {
   documents: any;
+  currentDocument: string;
   selectDocument: (documentName: string) => Promise<void>;
 }) {
   const documentElements = documents.map((document: string) => {
@@ -10,7 +12,9 @@ export default function Documents({
       <div key={document}>
         <button
           type="button"
-          className="list-button"
+          className={`${
+            currentDocument === document ? 'selected-document' : ''
+          } list-button`}
           onClick={() => {
             selectDocument(document);
           }}

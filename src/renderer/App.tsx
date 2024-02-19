@@ -116,7 +116,11 @@ function Main() {
       )}
       <div className="left-panel panel">
         <Libraries libraries={libraries} selectLibrary={selectLibrary} />
-        <Documents documents={documents} selectDocument={selectDocument} />
+        <Documents
+          documents={documents}
+          currentDocument={currentDocumentName}
+          selectDocument={selectDocument}
+        />
         <div className="button-area">
           <div className="filepath-header">Current file path: </div>
           <div className="button-area-content">
