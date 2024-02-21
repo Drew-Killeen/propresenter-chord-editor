@@ -101,10 +101,13 @@ export default async function getLyrics(filepath: string): Promise<{
         currentLyric = doc.content[i].value;
       } else if (
         'content' in doc.content[i] &&
-        doc.content[i].content.length > 0 &&
-        'value' in doc.content[i].content[0]
+        doc.content[i].content.length > 0
       ) {
-        currentLyric = doc.content[i].content[0].value;
+        for (let k = 0; k < doc.content[i].content.length; k++) {
+          if ('value' in doc.content[i].content[k]) {
+            currentLyric += doc.content[i].content[k].value;
+          }
+        }
       }
 
       if (!lyrics[cueUuid]) {
