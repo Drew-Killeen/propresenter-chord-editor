@@ -1,6 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Group from './components/group';
 import Libraries from './components/libraries';
 import Documents from './components/documents';
@@ -28,17 +28,19 @@ function Main() {
   const [currentDocumentName, setCurrentDocumentName] = useState<string>('');
   const [currentLibraryName, setCurrentLibraryName] = useState<string>('');
 
-  window.api.getLibraries((_event: any, value: string[]) => {
-    setLibraries(value);
-  });
+  useEffect(() => {
+    window.api.getLibraries((_event: any, value: string[]) => {
+      setLibraries(value);
+    });
 
-  window.api.filePath((_event: any, value: string) => {
-    setFilePath(value);
-  });
+    window.api.filePath((_event: any, value: string) => {
+      setFilePath(value);
+    });
 
-  window.api.filepathIsValid((_event: any, value: string) => {
-    setShowFilepathAlert(!value);
-  });
+    window.api.filepathIsValid((_event: any, value: string) => {
+      setShowFilepathAlert(!value);
+    });
+  }, []);
 
   const selectNewFilePath = () => {
     window.api.selectNewFilePath();
