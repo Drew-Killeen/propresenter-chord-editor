@@ -1,5 +1,3 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-plusplus */
 export default function isEditValid(oldText: string, newText: string): boolean {
   const stringLength = Math.max(oldText.length, newText.length);
   let insideBrackets = false;
@@ -14,10 +12,7 @@ export default function isEditValid(oldText: string, newText: string): boolean {
     }
     if (insideBrackets) {
       newTextIterator++;
-      continue;
-    }
-
-    if (newText[newTextIterator] === '[') {
+    } else if (newText[newTextIterator] === '[') {
       insideBrackets = true;
       newTextIterator++;
     } else if (oldText[oldTextIterator] !== newText[newTextIterator]) {

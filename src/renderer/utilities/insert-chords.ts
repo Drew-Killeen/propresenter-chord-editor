@@ -1,5 +1,3 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable no-continue */
 export default function insertChords(originalLyrics: any, chords: any) {
   const tempEditableLyrics = { ...originalLyrics };
   const cueUuids = Object.keys(originalLyrics);

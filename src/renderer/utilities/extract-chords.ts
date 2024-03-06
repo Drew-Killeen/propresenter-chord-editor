@@ -1,5 +1,3 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-plusplus */
 export default function extractChords(lyrics: any) {
   const tempChords: any = {};
   const cueUuids = Object.keys(lyrics);

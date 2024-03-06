@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-plusplus */
 import fs from 'fs';
 import { load } from 'protobufjs';
 import path from 'path';

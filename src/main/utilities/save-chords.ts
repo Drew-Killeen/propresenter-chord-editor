@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 import path from 'path';
 import { load } from 'protobufjs';
 import fs from 'fs';

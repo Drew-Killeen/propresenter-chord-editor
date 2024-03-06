@@ -1,6 +1,3 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-plusplus */
-
 export default function mergeChords(presentation: any, chords: any) {
   for (let i = 0; i < Object.keys(chords).length; i++) {
     const cueUuid = Object.keys(chords)[i];

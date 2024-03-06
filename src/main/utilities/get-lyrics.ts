@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-plusplus */
 import parseRTF from 'rtf-parser';
 import fs from 'fs';
 import util from 'util';
@@ -78,7 +76,7 @@ export default async function getLyrics(filepath: string): Promise<{
         }
       }
       if (Array.isArray(chords[cueUuid]) && chords[cueUuid].length > 0) {
-        chords[cueUuid].sort((a, b) => b.range.start - a.range.start);
+        chords[cueUuid].sort((a: any, b: any) => b.range.start - a.range.start);
       }
     }
 
