@@ -1,11 +1,13 @@
 export default function isEditValid(oldText: string, newText: string): boolean {
-  const stringLength = Math.max(oldText.length, newText.length);
   let insideBrackets = false;
 
   let oldTextIterator = 0;
   let newTextIterator = 0;
 
-  while (Math.max(oldTextIterator, newTextIterator) < stringLength) {
+  while (oldTextIterator < oldText.length) {
+    if (newText[newTextIterator] === undefined) {
+      return false;
+    }
     if (newText[newTextIterator] === ']') {
       insideBrackets = false;
       newTextIterator++;
