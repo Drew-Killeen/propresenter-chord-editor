@@ -17,6 +17,7 @@ module.exports = {
     'no-plusplus': 'off',
     'no-await-in-loop': 'off',
     'import/prefer-default-export': 'warn',
+    'no-use-before-define': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
