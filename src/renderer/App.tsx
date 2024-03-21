@@ -72,11 +72,9 @@ function Main() {
   };
 
   const updateLyrics = (newLyrics: string, cueUuid: string) => {
-    if (isEditValid(lyrics[cueUuid], newLyrics)) {
-      const tempEditableLyrics = { ...editableLyrics };
-      tempEditableLyrics[cueUuid] = newLyrics;
-      setEditableLyrics(tempEditableLyrics);
-    }
+    const tempEditableLyrics = { ...editableLyrics };
+    tempEditableLyrics[cueUuid] = newLyrics;
+    setEditableLyrics(tempEditableLyrics);
   };
 
   const groupElements = Object.keys(groups).map((key: string) => {
