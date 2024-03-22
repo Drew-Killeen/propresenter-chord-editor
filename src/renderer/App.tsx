@@ -47,7 +47,8 @@ function Main() {
 
   const saveDocument = async () => {
     if (!currentDocumentName) return;
-    const newChords: any = extractChords(editableLyrics);
+    const lyricsToProcess = { ...editableLyrics };
+    const newChords: any = extractChords(lyricsToProcess);
     const response = await window.api.saveDocument({
       newChords,
       documentName: currentDocumentName,
