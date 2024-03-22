@@ -5,7 +5,6 @@ import Group from './components/group';
 import Libraries from './components/libraries';
 import Documents from './components/documents';
 import Alert from './components/alert';
-import isEditValid from './utilities/is-edit-valid';
 import insertChords from './utilities/insert-chords';
 import extractChords from './utilities/extract-chords';
 
@@ -37,7 +36,7 @@ function Main() {
       setFilePath(value);
     });
 
-    window.api.filepathIsValid((_event: any, value: string) => {
+    window.api.isFilepathValid((_event: any, value: string) => {
       setShowFilepathAlert(!value);
     });
   }, []);

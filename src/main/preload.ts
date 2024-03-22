@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('getLibraries', callback),
   filePath: (callback: (event: IpcRendererEvent, ...args: any[]) => void) =>
     ipcRenderer.on('filePath', callback),
-  filepathIsValid: (
+  isFilepathValid: (
     callback: (event: IpcRendererEvent, ...args: any[]) => void
-  ) => ipcRenderer.on('filepathIsValid', callback),
+  ) => ipcRenderer.on('isFilepathValid', callback),
 });

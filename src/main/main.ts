@@ -92,7 +92,7 @@ const createWindow = async () => {
     selectFilePath()
       .then((newFilePath) => {
         if (!newFilePath.includes('ProPresenter')) {
-          mainWindow?.webContents.send('filepathIsValid', false);
+          mainWindow?.webContents.send('isFilepathValid', false);
         } else {
           store.set('filePath', newFilePath);
           filePath = newFilePath;
@@ -152,7 +152,7 @@ const createWindow = async () => {
       mainWindow?.webContents.send('getLibraries', libraryList);
     } else {
       console.log('Directory does not exist.');
-      mainWindow?.webContents.send('filepathIsValid', false);
+      mainWindow?.webContents.send('isFilepathValid', false);
     }
 
     if (!mainWindow) {
