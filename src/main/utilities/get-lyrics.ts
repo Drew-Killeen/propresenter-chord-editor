@@ -165,6 +165,7 @@ function removeQuestionMarks(text: string): string {
 }
 
 function getChords(customAttributes: any[]) {
+  if (!customAttributes) return [];
   const chords: any[] = [];
   for (let i = 0, k = 0; i < customAttributes.length; i++) {
     if ('chord' in customAttributes[i]) {
