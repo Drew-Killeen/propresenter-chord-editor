@@ -22,6 +22,8 @@ function Main() {
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
   const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(false);
+  const [showBracketErrorAlert, setShowBracketErrorAlert] =
+    useState<boolean>(false);
   const [saveIsSuccessful, setSaveIsSuccessful] = useState<boolean>(false);
   const [showSaveAlert, setShowSaveAlert] = useState<boolean>(false);
   const [currentDocumentName, setCurrentDocumentName] = useState<string>('');
@@ -64,7 +66,23 @@ function Main() {
   };
 
   const selectDocument = async (documentName: string) => {
-    const doc = await window.api.selectDocument(documentName);
+    const response = await window.api.selectDocument(documentName);
+
+    if (response.error) {
+      console.error(response.error);
+      setCurrentDocumentName('');
+      setLyrics({});
+      setGroups({});
+      setEditableLyrics({});
+
+      if (response.error === 'Lyric contains bracket') {
+        setShowBracketErrorAlert(true);
+      }
+
+      return;
+    }
+
+    const { doc } = response;
     setCurrentDocumentName(documentName);
     setLyrics(doc.lyrics);
     setGroups(doc.groups);
@@ -114,6 +132,18 @@ function Main() {
           {saveIsSuccessful
             ? 'Your changes have been saved.'
             : 'Error saving file. Please try again.'}
+        </Alert>
+      )}
+      {showBracketErrorAlert && (
+        <Alert
+          onClose={() => {
+            setShowBracketErrorAlert(false);
+          }}
+          buttonLabel="Dismiss"
+          alertLabel="Error loading document"
+        >
+          This document contains a bracket. Documents with brackets are not
+          currently supported. Please remove the bracket and try again.
         </Alert>
       )}
       <div className="left-panel panel">

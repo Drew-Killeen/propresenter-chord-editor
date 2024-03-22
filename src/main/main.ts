@@ -23,6 +23,7 @@ import {
 import getLyrics from './utilities/get-lyrics';
 import saveChords from './utilities/save-chords';
 import getOriginalPresentation from './utilities/get-original-presentation';
+import doLyricsContainBracket from './utilities/does-lyric-contain-bracket';
 
 const store = new Store();
 
@@ -139,7 +140,13 @@ const createWindow = async () => {
 
   ipcMain.handle('selectDocument', async (event, document) => {
     const doc = await getLyrics(`${filePath}/${currentLibrary}/${document}`);
-    return doc;
+
+    if (doLyricsContainBracket(doc.lyrics)) {
+      return { doc, error: 'Lyric contains bracket' };
+    }
+
+    const response = { doc };
+    return response;
   });
 
   mainWindow.on('ready-to-show', () => {
