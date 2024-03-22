@@ -108,6 +108,8 @@ function parseLyrics(content: any[], lastLyric: any): any {
       currentLyric !== '…' &&
       currentLyric !== '—' &&
       currentLyric !== '–' &&
+      currentLyric !== '' &&
+      currentLyric.charCodeAt(0) !== 8203 &&
       currentLyric.charAt(0) !== '?' &&
       lastLyric !== '“' &&
       lastLyric !== '‘' &&
