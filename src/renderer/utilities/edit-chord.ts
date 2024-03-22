@@ -10,6 +10,8 @@ export default function editChord(
   const { selectionStart, selectionEnd } = event.target;
   const newText = event.target.value;
 
+  const unmatchedBracketIndex = findBracketWithoutMatch(newText);
+
   // Check if editing inside of chord
   if (isSelectionInsideChord(newText, selectionStart, selectionEnd)) {
     if (isEditValid(originalLyrics, newText)) {
@@ -18,8 +20,7 @@ export default function editChord(
   }
 
   // Check for opening or closing brackets without a matching pair
-  const unmatchedBracketIndex = findBracketWithoutMatch(newText);
-  if (unmatchedBracketIndex !== -1) {
+  else if (unmatchedBracketIndex !== -1) {
     let newLyrics: string;
     // Compare old text to new text to determine if chord is being inserted or deleted
     if (
@@ -30,6 +31,19 @@ export default function editChord(
       newLyrics = deleteChord(newText, unmatchedBracketIndex, selectionStart);
     }
     onEdit(newLyrics, cueUuid);
+
+    // Preserve cursor position
+    setTimeout(() => {
+      event.target.setSelectionRange(selectionStart, selectionStart);
+    }, 0);
+  }
+
+  // Reset cursor if neither above condition is true
+  else {
+    // Preserve cursor position
+    setTimeout(() => {
+      event.target.setSelectionRange(selectionStart - 1, selectionStart - 1);
+    }, 0);
   }
 }
 

@@ -32,11 +32,6 @@ export default function Slide({
 
   const onChange = (event: any) => {
     editChord(event, lyricsPlusChords, originalLyrics, cueUuid, onEdit);
-
-    // Preserve cursor position
-    // setTimeout(() => {
-    //   event.target.setSelectionRange(cursorPosition, cursorPosition);
-    // }, 0);
   };
 
   return (
