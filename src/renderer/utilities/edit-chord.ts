@@ -120,6 +120,10 @@ function findBracketWithoutMatch(text: string): number {
       bracketIndex = i;
     }
   }
+
+  if (currentBracket === '[') {
+    return bracketIndex;
+  }
   return -1;
 }
 
