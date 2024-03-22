@@ -93,7 +93,8 @@ function isBracketAlone(
 
     if (
       matchingBracketIndex === -1 ||
-      duplicateBracketIndex < matchingBracketIndex
+      (duplicateBracketIndex < matchingBracketIndex &&
+        duplicateBracketIndex !== -1)
     ) {
       return true;
     }
@@ -148,7 +149,7 @@ function isChordBeingInserted(
 ) {
   const bracket = newText[unmatchedBracketIndex];
   if (bracket === '[') {
-    // fix bug where unmatched bracket is at the end of the string
+    // Check the old text to see if a matching bracket used to exist. If so, assume the chord is being deleted.
     return isBracketAlone(oldText, unmatchedBracketIndex, 'left');
   }
   return isBracketAlone(oldText, unmatchedBracketIndex, 'right');
