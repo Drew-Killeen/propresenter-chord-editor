@@ -101,13 +101,7 @@ function parseLyrics(content: any[], lastLyric: any): any {
     } else if (
       // Check for various known characters that the RTF parser doesn't handle properly
       // Not a great solution since it could cause issues in certain edge cases, but not much else can be done besides writing a custom parser
-      currentLyric !== '’' &&
-      currentLyric !== '‘' &&
-      currentLyric !== '“' &&
-      currentLyric !== '”' &&
-      currentLyric !== '…' &&
-      currentLyric !== '—' &&
-      currentLyric !== '–' &&
+      !beginsWithSpecialCharacter(currentLyric) &&
       currentLyric !== '' &&
       currentLyric.charCodeAt(0) !== 8203 &&
       currentLyric.charAt(0) !== '?' &&
@@ -148,6 +142,12 @@ function findText(content: any): string {
             content.content[k].value
           );
         }
+        if (
+          beginsWithSpecialCharacter(currentLyric[currentLyric.length - 1]) &&
+          content.content[k].value.charAt(0) === '?'
+        ) {
+          content.content[k].value = content.content[k].value.slice(1);
+        }
         currentLyric += content.content[k].value;
       }
     }
@@ -179,4 +179,16 @@ function getChords(customAttributes: any[]) {
     chords.sort((a: any, b: any) => b.range.start - a.range.start);
   }
   return chords;
+}
+
+function beginsWithSpecialCharacter(text: string): boolean {
+  return (
+    text === '’' ||
+    text === '‘' ||
+    text === '“' ||
+    text === '”' ||
+    text === '…' ||
+    text === '—' ||
+    text === '–'
+  );
 }
