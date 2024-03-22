@@ -12,6 +12,22 @@ export default function Group({
   originalLyrics: any;
   onEdit: (newLyrics: string, cueUuid: string) => void;
 }) {
+  useEffect(() => {
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+
+    if (cueGroup.group.color) {
+      if (cueGroup.group.color.red) red = cueGroup.group.color.red * 255;
+      if (cueGroup.group.color.green) green = cueGroup.group.color.green * 255;
+      if (cueGroup.group.color.blue) blue = cueGroup.group.color.blue * 255;
+    }
+
+    document.getElementById(
+      cueGroup.group.uuid.string
+    )!.style.background = `rgb(${red}, ${green}, ${blue})`;
+  }, [cueGroup]);
+
   if (!cueGroup.cueIdentifiers) return <></>;
 
   const label: string = cueGroup.group.name;
@@ -30,22 +46,6 @@ export default function Group({
       );
     }
   );
-
-  useEffect(() => {
-    let red = 0;
-    let green = 0;
-    let blue = 0;
-
-    if (cueGroup.group.color) {
-      if (cueGroup.group.color.red) red = cueGroup.group.color.red * 255;
-      if (cueGroup.group.color.green) green = cueGroup.group.color.green * 255;
-      if (cueGroup.group.color.blue) blue = cueGroup.group.color.blue * 255;
-    }
-
-    document.getElementById(
-      cueGroup.group.uuid.string
-    )!.style.background = `rgb(${red}, ${green}, ${blue})`;
-  }, [cueGroup]);
 
   return (
     <div className="group">
