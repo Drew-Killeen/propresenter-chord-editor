@@ -96,6 +96,10 @@ export default async function getLyrics(filepath: string): Promise<{
 
       // Figure out where the text is, if it exists at all
       if ('value' in doc.content[i]) {
+        // Slides containing zero-width characters include a question mark character due to the RTF parser. This is a workaround to remove the question mark character.
+        if (/^[\u200B?]+$/.test(doc.content[i].value)) {
+          doc.content[i].value = doc.content[i].value.replace(/\?/g, '');
+        }
         currentLyric = doc.content[i].value;
       } else if (
         'content' in doc.content[i] &&
@@ -103,6 +107,12 @@ export default async function getLyrics(filepath: string): Promise<{
       ) {
         for (let k = 0; k < doc.content[i].content.length; k++) {
           if ('value' in doc.content[i].content[k]) {
+            // Slides containing zero-width characters include a question mark character due to the RTF parser. This is a workaround to remove the question mark character.
+            if (/^[\u200B?]+$/.test(doc.content[i].content[k].value)) {
+              doc.content[i].content[k].value = doc.content[i].content[
+                k
+              ].value.replace(/\?/g, '');
+            }
             currentLyric += doc.content[i].content[k].value;
           }
         }
@@ -134,6 +144,7 @@ export default async function getLyrics(filepath: string): Promise<{
       if (currentLyric.charAt(0) === '?') {
         currentLyric = currentLyric.slice(1);
       }
+
       lyrics[cueUuid] += currentLyric;
     }
   }
