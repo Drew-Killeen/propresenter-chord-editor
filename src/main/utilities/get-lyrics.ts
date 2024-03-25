@@ -157,7 +157,7 @@ function findText(content: any): string {
 
 function isQuestionMarksOnly(text: string): boolean {
   // Slides containing zero-width characters include a question mark character due to the RTF parser. This is a workaround to remove the question mark character.
-  return /^[\u200B?]+$/.test(text);
+  return /^[\u200B? ]+$/.test(text);
 }
 
 function removeQuestionMarks(text: string): string {
