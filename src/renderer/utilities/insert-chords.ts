@@ -5,9 +5,7 @@ export default function insertChords(originalLyrics: any, chords: any) {
   for (let j = 0; j < cueUuids.length; j++) {
     // If there are no chords for this cue, continue
     if (!chords[cueUuids[j]] || chords[cueUuids[j]].length === 0) continue;
-    const slideText = tempEditableLyrics[cueUuids[j]]
-      .replace(/\s/g, '')
-      .replace(/\u200B/g, '');
+    const slideText = tempEditableLyrics[cueUuids[j]].replace(/\s/g, '');
 
     // Check if the slide contains only whitespace characters
     if (slideText.length === 0) {
