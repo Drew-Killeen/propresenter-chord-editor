@@ -137,8 +137,9 @@ function parseLyrics(content: any[], lastLyric: any): any {
       lyrics += '\n';
     }
 
-    if (currentLyric.charAt(0) === '?') {
-      currentLyric = currentLyric.slice(1);
+    const questionMarkIndex = indexOfFirstQuestionMark(currentLyric);
+    if (questionMarkIndex !== -1) {
+      currentLyric = removeCharacterAtIndex(currentLyric, questionMarkIndex);
     }
 
     lyrics += currentLyric;
@@ -214,4 +215,21 @@ function getChords(customAttributes: any[]) {
     chords.sort((a: any, b: any) => b.range.start - a.range.start);
   }
   return chords;
+}
+
+function indexOfFirstQuestionMark(str: string): number {
+  // Remove zero-width spaces
+  const cleanedStr = str.replace(/\u200B/g, '');
+
+  // Check if the first character is a question mark
+  if (cleanedStr.charAt(0) === '?') {
+    return str.indexOf('?');
+  }
+  return -1;
+}
+
+function removeCharacterAtIndex(str: string, index: number): string {
+  const firstPart = str.slice(0, index);
+  const secondPart = str.slice(index + 1);
+  return firstPart + secondPart;
 }
