@@ -10,8 +10,8 @@ export default async function getLyrics(filepath: string): Promise<{
   groups: any;
 }> {
   let data: any;
-  const lyrics: any = {};
-  const chords: any = {};
+  let lyrics: any = {};
+  let chords: any = {};
   let groups: any = {};
 
   try {
@@ -42,25 +42,47 @@ export default async function getLyrics(filepath: string): Promise<{
   // Get group names and colors
   groups = getGroups(outputObject.cueGroups);
 
-  // Get lyrics and chords
-  for (let j = 0; j < outputObject.cues.length; j++) {
-    let textElement: any[];
-    try {
-      textElement =
-        outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
-          .element.text.rtfData;
-    } catch {
-      continue;
-    }
+  // Parse the outputObject to get the cues for the lyrics and chords
+  const cueData: any[] = getCues(outputObject.cues);
 
-    const cueUuid: string = outputObject.cues[j].uuid.string;
+  const cues = await processCues(cueData);
 
-    // Custom attributes are used to store chords
+  lyrics = cues.lyrics;
+  chords = cues.chords;
+
+  return { lyrics, chords, groups };
+}
+
+function getCues(cues: any): any[] {
+  const cueData: any[] = [];
+
+  for (let i = 0; i < cues.length; i++) {
+    const cueUuid: string = cues[i].uuid.string;
+    const textElement =
+      cues[i].actions[0].slide.presentation.baseSlide.elements[0].element.text
+        .rtfData;
     const { customAttributes } =
-      outputObject.cues[j].actions[0].slide.presentation.baseSlide.elements[0]
-        .element.text.attributes;
+      cues[i].actions[0].slide.presentation.baseSlide.elements[0].element.text
+        .attributes;
 
-    chords[cueUuid] = getChords(customAttributes);
+    cueData[i] = {
+      cueUuid,
+      textElement,
+      customAttributes,
+    };
+  }
+  return cueData;
+}
+
+async function processCues(
+  cueData: { cueUuid: string; textElement: any; customAttributes: any }[]
+): Promise<{ lyrics: any; chords: any }> {
+  const lyrics: any = {};
+  const chords: any = {};
+
+  for (let i = 0; i < cueData.length; i++) {
+    const { cueUuid } = cueData[i];
+    chords[cueUuid] = getChords(cueData[i].customAttributes);
 
     // Parse RTF to retrieve lyrics
     const asyncParseRTF = util.promisify(parseRTF.string);
@@ -68,7 +90,7 @@ export default async function getLyrics(filepath: string): Promise<{
     let doc;
 
     try {
-      doc = await asyncParseRTF(textElement);
+      doc = await asyncParseRTF(cueData[i].textElement);
     } catch {
       console.log('error');
     }
@@ -80,7 +102,7 @@ export default async function getLyrics(filepath: string): Promise<{
     lyrics[cueUuid] = parseLyrics(doc.content, lastLyric);
   }
 
-  return { lyrics, chords, groups };
+  return { lyrics, chords };
 }
 
 function getGroups(cueGroups: any): any {
@@ -164,6 +186,18 @@ function removeQuestionMarks(text: string): string {
   return text.replace(/\?/g, '');
 }
 
+function beginsWithSpecialCharacter(text: string): boolean {
+  return (
+    text === '’' ||
+    text === '‘' ||
+    text === '“' ||
+    text === '”' ||
+    text === '…' ||
+    text === '—' ||
+    text === '–'
+  );
+}
+
 function getChords(customAttributes: any[]) {
   if (!customAttributes) return [];
   const chords: any[] = [];
@@ -180,16 +214,4 @@ function getChords(customAttributes: any[]) {
     chords.sort((a: any, b: any) => b.range.start - a.range.start);
   }
   return chords;
-}
-
-function beginsWithSpecialCharacter(text: string): boolean {
-  return (
-    text === '’' ||
-    text === '‘' ||
-    text === '“' ||
-    text === '”' ||
-    text === '…' ||
-    text === '—' ||
-    text === '–'
-  );
 }
