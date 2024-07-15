@@ -125,7 +125,10 @@ function parseLyrics(content: any[], lastLyric: any): any {
       // Not a great solution since it could cause issues in certain edge cases, but not much else can be done besides writing a custom parser
       !beginsWithSpecialCharacter(currentLyric) &&
       currentLyric !== '' &&
-      currentLyric.charCodeAt(0) !== 8203 &&
+      /** The following line solves an issue by removing zero-width spaces, but creates several others.
+       ** Many slides contain zero-width spaces, some of which represent a line break, and others that have an unknown use.
+       ** I'm leaving the zero-width spaces in for now since it seems to cause fewer issues in the end. */
+      // currentLyric.charCodeAt(0) !== 8203 &&
       currentLyric.charAt(0) !== '?' &&
       lastLyric !== '“' &&
       lastLyric !== '‘' &&
