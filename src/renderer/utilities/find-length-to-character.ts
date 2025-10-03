@@ -16,7 +16,7 @@ export default function findLengthToCharacter({
       break;
     }
     length++;
-    direction === 'forward' ? i++ : i--;
+    i = direction === 'forward' ? i + 1 : i - 1;
   }
   return length;
 }

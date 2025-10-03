@@ -1,13 +1,13 @@
 export default function Documents({
-  documents,
+  documentNames,
   currentDocument,
   selectDocument,
 }: {
-  documents: any;
+  documentNames: string[];
   currentDocument: string;
   selectDocument: (documentName: string) => Promise<void>;
 }) {
-  const documentElements = documents.map((document: string) => {
+  const documentElements = documentNames.map((document: string) => {
     return (
       <div key={document}>
         <button

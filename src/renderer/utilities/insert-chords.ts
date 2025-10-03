@@ -1,4 +1,9 @@
-export default function insertChords(originalLyrics: any, chords: any) {
+import { Chord, Chords, Lyrics } from 'types/presentation';
+
+export default function insertChords(
+  originalLyrics: Lyrics,
+  chords: Chords
+): Lyrics {
   const tempEditableLyrics = { ...originalLyrics };
   const cueUuids = Object.keys(originalLyrics);
 
@@ -16,14 +21,14 @@ export default function insertChords(originalLyrics: any, chords: any) {
 
       // Sort the chords in order so that we can insert them from the beginning
       chords[cueUuids[j]].sort(
-        (a: any, b: any) => a.range.start - b.range.start
+        (a: Chord, b: Chord) => (a.range.start ?? 0) - (b.range.start ?? 0)
       );
 
       for (let i = 0; i < chords[cueUuids[j]].length; i++) {
         if (chords[cueUuids[j]][i].chord) {
           let chordPosition = 0;
           if ('start' in chords[cueUuids[j]][i].range) {
-            chordPosition = chords[cueUuids[j]][i].range.start;
+            chordPosition = chords[cueUuids[j]][i].range.start ?? 0;
           }
 
           // If there is a gap between chords, insert a new line
@@ -48,7 +53,7 @@ export default function insertChords(originalLyrics: any, chords: any) {
         if (chords[cueUuids[j]][i].chord) {
           let chordPosition = 0;
           if ('start' in chords[cueUuids[j]][i].range) {
-            chordPosition = chords[cueUuids[j]][i].range.start;
+            chordPosition = chords[cueUuids[j]][i].range.start ?? 0;
           }
           tempEditableLyrics[cueUuids[j]] = `${tempEditableLyrics[
             cueUuids[j]

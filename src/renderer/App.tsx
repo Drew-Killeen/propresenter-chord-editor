@@ -1,7 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useEffect, useState } from 'react';
-import { Groups, Lyrics } from 'types/presentation';
+import { Chords, Groups, Lyrics } from 'types/presentation';
 import { IpcRendererEvent } from 'electron';
 import Group from './components/group';
 import Libraries from './components/libraries';
@@ -12,10 +12,10 @@ import extractChords from './utilities/extract-chords';
 
 function Main() {
   const [lyrics, setLyrics] = useState<Lyrics>();
-  const [editableLyrics, setEditableLyrics] = useState<any>();
+  const [editableLyrics, setEditableLyrics] = useState<Lyrics>();
   const [groups, setGroups] = useState<Groups>({});
   const [libraries, setLibraries] = useState<string[]>([]);
-  const [documents, setDocuments] = useState<string[]>([]);
+  const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
   const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(false);
   const [showBracketErrorAlert, setShowBracketErrorAlert] =
@@ -46,7 +46,7 @@ function Main() {
   const saveDocument = async () => {
     if (!currentDocumentName) return;
     const lyricsToProcess = { ...editableLyrics };
-    const newChords: any = extractChords(lyricsToProcess);
+    const newChords: Chords = extractChords(lyricsToProcess);
     const response = await window.api.saveDocument({
       newChords,
       documentName: currentDocumentName,
@@ -58,7 +58,7 @@ function Main() {
   const selectLibrary = async (libraryName: string) => {
     const docs = await window.api.selectLibrary(libraryName);
     setCurrentLibraryName(libraryName);
-    setDocuments(docs);
+    setDocumentNames(docs);
   };
 
   const selectDocument = async (documentName: string) => {
@@ -91,17 +91,20 @@ function Main() {
     setEditableLyrics(tempEditableLyrics);
   };
 
-  const groupElements = Object.keys(groups).map((key: string) => {
-    return (
-      <Group
-        lyricsPlusChords={editableLyrics}
-        originalLyrics={lyrics}
-        key={groups[key].group.uuid.string}
-        cueGroup={groups[key]}
-        onEdit={updateLyrics}
-      />
-    );
-  });
+  const groupElements =
+    lyrics && editableLyrics
+      ? Object.keys(groups).map((key: string) => {
+          return (
+            <Group
+              lyricsPlusChords={editableLyrics}
+              originalLyrics={lyrics}
+              key={groups[key].group.uuid.string}
+              cueGroup={groups[key]}
+              onEdit={updateLyrics}
+            />
+          );
+        })
+      : [];
 
   return (
     <div id="main">
@@ -149,7 +152,7 @@ function Main() {
           selectLibrary={selectLibrary}
         />
         <Documents
-          documents={documents}
+          documentNames={documentNames}
           currentDocument={currentDocumentName}
           selectDocument={selectDocument}
         />

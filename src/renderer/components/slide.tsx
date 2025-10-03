@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import { useLayoutEffect, useRef } from 'react';
+import { ChangeEvent, useLayoutEffect, useRef } from 'react';
 import editChord from 'renderer/utilities/edit-chord';
 
 export default function Slide({
@@ -30,7 +30,7 @@ export default function Slide({
     }
   }, [lyricsPlusChords]);
 
-  const onChange = (event: any) => {
+  const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     editChord(event, lyricsPlusChords, originalLyrics, cueUuid, onEdit);
   };
 

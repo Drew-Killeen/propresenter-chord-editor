@@ -1,7 +1,8 @@
+import { ChangeEvent } from 'react';
 import isEditValid from './is-edit-valid';
 
 export default function editChord(
-  event: any,
+  event: ChangeEvent<HTMLTextAreaElement>,
   oldLyricsPlusChords: string,
   originalLyrics: string,
   cueUuid: string,

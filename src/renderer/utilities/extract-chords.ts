@@ -1,5 +1,7 @@
-export default function extractChords(lyrics: any) {
-  const tempChords: any = {};
+import { Chord, Chords, Lyrics } from 'types/presentation';
+
+export default function extractChords(lyrics: Lyrics) {
+  const tempChords: Chords = {};
   const cueUuids = Object.keys(lyrics);
 
   for (let j = 0; j < cueUuids.length; j++) {
@@ -44,7 +46,7 @@ export default function extractChords(lyrics: any) {
       const chordMatches = lyrics[cueUuids[j]].match(/\[(.*?)\]/g);
       if (!chordMatches) continue;
 
-      tempChords[cueUuids[j]] = chordMatches.map((chordMatch: any) => {
+      tempChords[cueUuids[j]] = chordMatches.map((chordMatch: string) => {
         const chord = chordMatch.slice(1, -1);
         const chordPosition = lyrics[cueUuids[j]].indexOf(chordMatch);
 
@@ -69,8 +71,7 @@ export default function extractChords(lyrics: any) {
       tempChords[cueUuids[i]].length > 0
     ) {
       tempChords[cueUuids[i]].sort(
-        (a: { range: { start: number } }, b: { range: { start: number } }) =>
-          b.range.start - a.range.start
+        (a: Chord, b: Chord) => (b.range.start ?? 0) - (a.range.start ?? 0)
       );
     }
   }

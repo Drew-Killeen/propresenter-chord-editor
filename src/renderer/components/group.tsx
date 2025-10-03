@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { CueIdentifier, GroupData, Lyrics } from 'types/presentation';
 import Slide from './slide';
 
 export default function Group({
@@ -7,9 +8,9 @@ export default function Group({
   originalLyrics,
   onEdit,
 }: {
-  cueGroup: any;
-  lyricsPlusChords: any;
-  originalLyrics: any;
+  cueGroup: GroupData;
+  lyricsPlusChords: Lyrics;
+  originalLyrics: Lyrics;
   onEdit: (newLyrics: string, cueUuid: string) => void;
 }) {
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function Group({
   const label: string = cueGroup.group.name;
 
   const slideElements = cueGroup.cueIdentifiers.map(
-    (value: any, index: number) => {
+    (value: CueIdentifier, index: number) => {
       return (
         <Slide
           key={value.string}
