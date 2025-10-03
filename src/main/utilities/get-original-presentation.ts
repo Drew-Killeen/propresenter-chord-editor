@@ -9,7 +9,7 @@ export default async function getLyrics(filepath: string): Promise<{
 
   try {
     data = fs.readFileSync(filepath);
-  } catch (err) {
+  } catch (err: unknown) {
     console.log(err);
   }
 

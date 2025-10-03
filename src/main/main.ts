@@ -113,7 +113,7 @@ const createWindow = async () => {
       originalPresentation = await getOriginalPresentation(
         `${filePath}/${currentLibrary}/${documentName}`
       );
-    } catch (err) {
+    } catch (err: unknown) {
       console.log(err);
       return false;
     }
@@ -124,7 +124,7 @@ const createWindow = async () => {
         newChords,
         filePath: `${filePath}/${currentLibrary}/${documentName}`,
       });
-    } catch (err) {
+    } catch (err: unknown) {
       console.log(err);
       return false;
     }
