@@ -93,6 +93,11 @@ async function processCues(
       doc = await asyncParseRTF(cueData[i].textElement);
     } catch {
       console.log('error');
+      continue; // Skip this cue if parsing fails
+    }
+
+    if (!doc) {
+      continue; // Skip this cue if doc is undefined
     }
 
     let lastLyric = '';

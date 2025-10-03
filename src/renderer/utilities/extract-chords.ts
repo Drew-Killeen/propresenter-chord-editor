@@ -68,7 +68,10 @@ export default function extractChords(lyrics: any) {
       Array.isArray(tempChords[cueUuids[i]]) &&
       tempChords[cueUuids[i]].length > 0
     ) {
-      tempChords[cueUuids[i]].sort((a, b) => b.range.start - a.range.start);
+      tempChords[cueUuids[i]].sort(
+        (a: { range: { start: number } }, b: { range: { start: number } }) =>
+          b.range.start - a.range.start
+      );
     }
   }
 

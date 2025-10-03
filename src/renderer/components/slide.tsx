@@ -17,7 +17,7 @@ export default function Slide({
   cueUuid: string;
   onEdit: (newLyrics: string, cueUuid: string) => void;
 }) {
-  const textareaRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useLayoutEffect(() => {
     // Reset height - important to shrink on delete

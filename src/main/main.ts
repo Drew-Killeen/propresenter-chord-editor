@@ -29,7 +29,7 @@ const store = new Store();
 
 let mainWindow: BrowserWindow | null = null;
 
-let filePath = store.get('filePath');
+let filePath = store.get('filePath') as string;
 
 if (!filePath) {
   filePath = `${os.homedir()}/Documents/ProPresenter/Libraries`;

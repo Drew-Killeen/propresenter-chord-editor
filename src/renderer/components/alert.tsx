@@ -5,7 +5,7 @@ export default function Alert({
   onClose,
 }: {
   children: string;
-  alertLabel?: string;
+  alertLabel: string;
   buttonLabel: string;
   onClose: () => void;
 }) {

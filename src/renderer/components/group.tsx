@@ -28,7 +28,7 @@ export default function Group({
     )!.style.background = `rgb(${red}, ${green}, ${blue})`;
   }, [cueGroup]);
 
-  if (!cueGroup.cueIdentifiers) return <></>;
+  if (!cueGroup.cueIdentifiers) return null;
 
   const label: string = cueGroup.group.name;
 
