@@ -18,6 +18,15 @@ module.exports = {
     '@typescript-eslint/no-implicit-any-catch': 'error',
     'no-use-before-define': 'off',
     'no-console': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
   },
   parserOptions: {
     ecmaVersion: 2020,
