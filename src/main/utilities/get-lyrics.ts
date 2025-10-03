@@ -1,23 +1,35 @@
-import parseRTF from 'rtf-parser';
+import parseRTF, { RTFDocument, RTFParagraph, RTFSpan } from 'rtf-parser';
 import fs from 'fs';
 import util from 'util';
 import { load } from 'protobufjs';
 import path from 'path';
+import {
+  Chords,
+  Groups,
+  Lyrics,
+  Cue,
+  CueData,
+  CustomAttribute,
+  GroupData,
+  Chord,
+} from 'types/presentation';
 
 export default async function getLyrics(filepath: string): Promise<{
-  lyrics: any;
-  chords: any;
-  groups: any;
+  lyrics: Lyrics;
+  chords: Chords;
+  groups: Groups;
 }> {
-  let data: any;
-  let lyrics: any = {};
-  let chords: any = {};
-  let groups: any = {};
+  let lyrics: Lyrics = {};
+  let chords: Chords = {};
+  let groups: Groups = {};
 
+  let presentationBuffer: Uint8Array;
   try {
-    data = fs.readFileSync(filepath);
-  } catch (err) {
+    const buffer = fs.readFileSync(filepath);
+    presentationBuffer = new Uint8Array(buffer);
+  } catch (err: unknown) {
     console.log(err);
+    return { lyrics, chords, groups };
   }
 
   let protoPath = 'assets/proto/propresenter.proto';
@@ -33,7 +45,7 @@ export default async function getLyrics(filepath: string): Promise<{
 
   const messageType = proto.lookupType('rv.data.Presentation');
 
-  const message = messageType.decode(data);
+  const message = messageType.decode(presentationBuffer);
 
   const outputObject = messageType.toObject(message);
 
@@ -43,7 +55,7 @@ export default async function getLyrics(filepath: string): Promise<{
   groups = getGroups(outputObject.cueGroups);
 
   // Parse the outputObject to get the cues for the lyrics and chords
-  const cueData: any[] = getCues(outputObject.cues);
+  const cueData: CueData[] = getCues(outputObject.cues);
 
   const cues = await processCues(cueData);
 
@@ -53,8 +65,8 @@ export default async function getLyrics(filepath: string): Promise<{
   return { lyrics, chords, groups };
 }
 
-function getCues(cues: any): any[] {
-  const cueData: any[] = [];
+function getCues(cues: Cue[]): CueData[] {
+  const cueData: CueData[] = [];
 
   for (let i = 0; i < cues.length; i++) {
     const cueUuid: string = cues[i].uuid.string;
@@ -75,10 +87,10 @@ function getCues(cues: any): any[] {
 }
 
 async function processCues(
-  cueData: { cueUuid: string; textElement: any; customAttributes: any }[]
-): Promise<{ lyrics: any; chords: any }> {
-  const lyrics: any = {};
-  const chords: any = {};
+  cueData: CueData[]
+): Promise<{ lyrics: Lyrics; chords: Chords }> {
+  const lyrics: Lyrics = {};
+  const chords: Chords = {};
 
   for (let i = 0; i < cueData.length; i++) {
     const { cueUuid } = cueData[i];
@@ -87,10 +99,12 @@ async function processCues(
     // Parse RTF to retrieve lyrics
     const asyncParseRTF = util.promisify(parseRTF.string);
 
-    let doc;
+    let doc: RTFDocument;
 
     try {
-      doc = await asyncParseRTF(cueData[i].textElement);
+      // Convert Uint8Array to string for RTF parser
+      const rtfString = new TextDecoder().decode(cueData[i].textElement);
+      doc = await asyncParseRTF(rtfString);
     } catch {
       console.log('error');
       continue; // Skip this cue if parsing fails
@@ -104,21 +118,24 @@ async function processCues(
     if (lyrics[cueUuid] !== undefined) {
       lastLyric = lyrics[cueUuid][lyrics[cueUuid].length - 1];
     }
-    lyrics[cueUuid] = parseLyrics(doc.content, lastLyric);
+    lyrics[cueUuid] = parseLyric(doc.content, lastLyric);
   }
 
   return { lyrics, chords };
 }
 
-function getGroups(cueGroups: any): any {
-  const groups: any = {};
+function getGroups(cueGroups: GroupData[]): Groups {
+  const groups: Groups = {};
   for (let i = 0; i < cueGroups.length; i++) {
     groups[cueGroups[i].group.uuid.string] = cueGroups[i];
   }
   return groups;
 }
 
-function parseLyrics(content: any[], lastLyric: any): any {
+function parseLyric(
+  content: (RTFParagraph | RTFSpan)[],
+  lastLyric: string
+): string {
   let lyrics: string = '';
   for (let i = 0; i < content.length; i++) {
     let currentLyric: string = findText(content[i]);
@@ -156,7 +173,7 @@ function parseLyrics(content: any[], lastLyric: any): any {
   return lyrics;
 }
 
-function findText(content: any): string {
+function findText(content: RTFParagraph | RTFSpan): string {
   let currentLyric: string = '';
 
   // Figure out where the text is, if it exists at all
@@ -207,12 +224,12 @@ function beginsWithSpecialCharacter(text: string): boolean {
   );
 }
 
-function getChords(customAttributes: any[]) {
+function getChords(customAttributes: CustomAttribute[]) {
   if (!customAttributes) return [];
-  const chords: any[] = [];
+  const chords: Chord[] = [];
   for (let i = 0, k = 0; i < customAttributes.length; i++) {
     if ('chord' in customAttributes[i]) {
-      chords[k] = customAttributes[i];
+      chords[k] = customAttributes[i] as Chord;
       if ('start' in chords[k].range === false) {
         chords[k].range.start = 0;
       }
@@ -220,7 +237,7 @@ function getChords(customAttributes: any[]) {
     }
   }
   if (Array.isArray(chords) && chords.length > 0) {
-    chords.sort((a: any, b: any) => b.range.start - a.range.start);
+    chords.sort((a: Chord, b: Chord) => b.range.start - a.range.start);
   }
   return chords;
 }
