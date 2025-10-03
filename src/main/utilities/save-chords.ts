@@ -1,6 +1,7 @@
 import path from 'path';
 import { load } from 'protobufjs';
 import fs from 'fs';
+import { Chords, PresentationDocument } from 'types/presentation';
 import mergeChords from './merge-chords';
 
 export default async function saveChords({
@@ -8,8 +9,8 @@ export default async function saveChords({
   newChords,
   filePath,
 }: {
-  originalPresentation: any;
-  newChords: any;
+  originalPresentation: PresentationDocument;
+  newChords: Chords;
   filePath: string;
 }) {
   // Merge original presentation with new chords

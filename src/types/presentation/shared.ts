@@ -36,6 +36,6 @@ export interface Size {
 
 // Range type for positioning in text
 export interface ChordRange {
-  start: number;
-  end: number;
+  start?: number;
+  end?: number;
 }

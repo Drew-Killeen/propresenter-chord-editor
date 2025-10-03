@@ -144,8 +144,10 @@ export interface BaseSlide {
   uuid: UUID;
 }
 
-// Chord chart (empty in sample data)
-export interface ChordChart {}
+// Chord chart configuration
+export interface ChordChart {
+  platform?: number;
+}
 
 // Presentation configuration
 export interface Presentation {

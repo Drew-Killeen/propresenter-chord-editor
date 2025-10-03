@@ -1,10 +1,24 @@
-export default function mergeChords(presentation: any, chords: any) {
+import {
+  Chords,
+  Cue,
+  CustomAttribute,
+  PresentationDocument,
+} from 'types/presentation';
+
+export default function mergeChords(
+  presentation: PresentationDocument,
+  chords: Chords
+) {
+  if (!presentation.cues) {
+    return presentation;
+  }
+
   for (let i = 0; i < Object.keys(chords).length; i++) {
     const cueUuid = Object.keys(chords)[i];
 
     // Find the index of the cue in the presentation that matches the chord UUID
     const cueIndex = presentation.cues.findIndex(
-      (cue: any) => cue.uuid.string === cueUuid
+      (cue: Cue) => cue.uuid.string === cueUuid
     );
 
     // If no matching cue is found, skip to the next iteration
@@ -22,17 +36,15 @@ export default function mergeChords(presentation: any, chords: any) {
 
     // Remove all existing chord custom attributes
     customAttributes = customAttributes.filter(
-      (attribute: any) => !('chord' in attribute)
+      (attribute: CustomAttribute) => !('chord' in attribute)
     );
 
     // Add the chord custom attributes
     customAttributes.push(...chords[cueUuid]);
 
     // Sort the custom attributes by start position. If no start position is found, default to 0
-    customAttributes.sort((a: any, b: any) => {
-      if ('start' in a.range === false) a.range.start = 0;
-      if ('start' in b.range === false) b.range.start = 0;
-      return a.range.start - b.range.start;
+    customAttributes.sort((a: CustomAttribute, b: CustomAttribute) => {
+      return (a.range.start ?? 0) - (b.range.start ?? 0);
     });
 
     presentation.cues[

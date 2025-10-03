@@ -1,16 +1,19 @@
 import fs from 'fs';
 import { load } from 'protobufjs';
 import path from 'path';
+import type { PresentationDocument } from '../../types/presentation';
 
-export default async function getLyrics(filepath: string): Promise<{
-  [k: string]: any;
-}> {
-  let data: any;
+export default async function getOriginalPresentation(
+  filepath: string
+): Promise<PresentationDocument> {
+  let presentationBuffer: Uint8Array;
 
   try {
-    data = fs.readFileSync(filepath);
+    const buffer = fs.readFileSync(filepath);
+    presentationBuffer = new Uint8Array(buffer);
   } catch (err: unknown) {
     console.log(err);
+    throw new Error('Failed to read presentation file');
   }
 
   let protoPath = 'assets/proto/propresenter.proto';
@@ -26,9 +29,9 @@ export default async function getLyrics(filepath: string): Promise<{
 
   const messageType = proto.lookupType('rv.data.Presentation');
 
-  const message = messageType.decode(data);
+  const message = messageType.decode(presentationBuffer);
 
   const outputObject = messageType.toObject(message);
 
-  return outputObject;
+  return outputObject as PresentationDocument;
 }
