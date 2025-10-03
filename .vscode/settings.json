@@ -4,13 +4,18 @@
     ".prettierrc": "jsonc",
     ".eslintignore": "ignore"
   },
-  
+
   "eslint.validate": [
     "javascript",
     "javascriptreact",
-    "html",
-    "typescriptreact"
+    "typescript",
+    "typescriptreact",
+    "html"
   ],
+
+  "eslint.enable": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.run": "onType",
 
   "javascript.validate.enable": false,
   "javascript.format.enable": false,
