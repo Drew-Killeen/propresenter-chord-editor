@@ -1,6 +1,8 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useEffect, useState } from 'react';
+import { Groups, Lyrics } from 'types/presentation';
+import { IpcRendererEvent } from 'electron';
 import Group from './components/group';
 import Libraries from './components/libraries';
 import Documents from './components/documents';
@@ -8,16 +10,10 @@ import Alert from './components/alert';
 import insertChords from './utilities/insert-chords';
 import extractChords from './utilities/extract-chords';
 
-declare global {
-  interface Window {
-    api: any;
-  }
-}
-
 function Main() {
-  const [lyrics, setLyrics] = useState<any>();
+  const [lyrics, setLyrics] = useState<Lyrics>();
   const [editableLyrics, setEditableLyrics] = useState<any>();
-  const [groups, setGroups] = useState<any>({});
+  const [groups, setGroups] = useState<Groups>({});
   const [libraries, setLibraries] = useState<string[]>([]);
   const [documents, setDocuments] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
@@ -30,15 +26,15 @@ function Main() {
   const [currentLibraryName, setCurrentLibraryName] = useState<string>('');
 
   useEffect(() => {
-    window.api.getLibraries((_event: any, value: string[]) => {
+    window.api.getLibraries((_event: IpcRendererEvent, value: string[]) => {
       setLibraries(value);
     });
 
-    window.api.filePath((_event: any, value: string) => {
+    window.api.filePath((_event: IpcRendererEvent, value: string) => {
       setFilePath(value);
     });
 
-    window.api.isFilepathValid((_event: any, value: string) => {
+    window.api.isFilepathValid((_event: IpcRendererEvent, value: boolean) => {
       setShowFilepathAlert(!value);
     });
   }, []);
