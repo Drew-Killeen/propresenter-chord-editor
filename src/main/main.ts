@@ -19,11 +19,15 @@ import {
   getDocuments,
   resolveHtmlPath,
   selectFilePath,
-} from './utilities/util';
-import getLyrics from './utilities/get-lyrics';
-import saveChords from './utilities/save-chords';
-import getOriginalPresentation from './utilities/get-original-presentation';
-import doLyricsContainBracket from './utilities/does-lyric-contain-bracket';
+} from './util';
+import { PresentationManager } from './services/PresentationManager';
+import { LyricParser } from './services/LyricParser';
+import { ChordMerger } from './services/ChordMerger';
+
+// Initialize service instances
+const presentationManager = new PresentationManager();
+const lyricParser = new LyricParser();
+const chordMerger = new ChordMerger();
 
 const store = new Store();
 
@@ -108,28 +112,19 @@ const createWindow = async () => {
   });
 
   ipcMain.handle('saveDocument', async (event, { newChords, documentName }) => {
-    let originalPresentation;
     try {
-      originalPresentation = await getOriginalPresentation(
-        `${filePath}/${currentLibrary}/${documentName}`
-      );
-    } catch (err: unknown) {
-      console.log(err);
-      return false;
-    }
-
-    try {
-      await saveChords({
+      const documentPath = `${filePath}/${currentLibrary}/${documentName}`;
+      const originalPresentation = await presentationManager.load(documentPath);
+      const mergedPresentation = chordMerger.merge(
         originalPresentation,
-        newChords,
-        filePath: `${filePath}/${currentLibrary}/${documentName}`,
-      });
+        newChords
+      );
+      await presentationManager.save(mergedPresentation, documentPath);
+      return true;
     } catch (err: unknown) {
-      console.log(err);
+      console.error('Failed to save document:', err);
       return false;
     }
-
-    return true;
   });
 
   ipcMain.handle('selectLibrary', async (event, library) => {
@@ -139,14 +134,28 @@ const createWindow = async () => {
   });
 
   ipcMain.handle('selectDocument', async (event, document) => {
-    const doc = await getLyrics(`${filePath}/${currentLibrary}/${document}`);
+    try {
+      const documentPath = `${filePath}/${currentLibrary}/${document}`;
+      const presentation = await presentationManager.load(documentPath);
 
-    if (doLyricsContainBracket(doc.lyrics)) {
-      return { doc, error: 'Lyric contains bracket' };
+      if (!presentation.cues) {
+        return { doc: { lyrics: {}, chords: {}, groups: {} } };
+      }
+
+      const doc = await lyricParser.parse(
+        presentation.cues,
+        presentation.cueGroups
+      );
+
+      if (lyricParser.containsBrackets(doc.lyrics)) {
+        return { doc, error: 'Lyric contains bracket' };
+      }
+
+      return { doc };
+    } catch (err: unknown) {
+      console.error('Failed to load document:', err);
+      throw err;
     }
-
-    const response = { doc };
-    return response;
   });
 
   mainWindow.on('ready-to-show', () => {
