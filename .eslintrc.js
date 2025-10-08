@@ -13,11 +13,12 @@ module.exports = {
     'no-continue': 'off',
     'no-plusplus': 'off',
     'no-await-in-loop': 'off',
-    'import/prefer-default-export': 'warn',
+    'import/prefer-default-export': 'off',
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-implicit-any-catch': 'error',
     'no-use-before-define': 'off',
     'no-console': 'off',
+    'class-methods-use-this': 'off',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': [
       'warn',
