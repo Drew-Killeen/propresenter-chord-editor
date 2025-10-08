@@ -10,6 +10,8 @@ import Alert from './components/alert';
 import insertChords from './utilities/insert-chords';
 import extractChords from './utilities/extract-chords';
 
+type AlertType = 'filepath' | 'save' | 'bracket' | null;
+
 function Main() {
   const [lyrics, setLyrics] = useState<Lyrics>();
   const [editableLyrics, setEditableLyrics] = useState<Lyrics>();
@@ -17,11 +19,9 @@ function Main() {
   const [libraries, setLibraries] = useState<string[]>([]);
   const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<string>('none');
-  const [showFilepathAlert, setShowFilepathAlert] = useState<boolean>(false);
-  const [showBracketErrorAlert, setShowBracketErrorAlert] =
-    useState<boolean>(false);
-  const [saveIsSuccessful, setSaveIsSuccessful] = useState<boolean>(false);
-  const [showSaveAlert, setShowSaveAlert] = useState<boolean>(false);
+  const [alert, setAlert] = useState<{ type: AlertType; success?: boolean }>({
+    type: null,
+  });
   const [currentDocumentName, setCurrentDocumentName] = useState<string>('');
   const [currentLibraryName, setCurrentLibraryName] = useState<string>('');
 
@@ -35,7 +35,7 @@ function Main() {
     });
 
     window.api.isFilepathValid((_event: IpcRendererEvent, value: boolean) => {
-      setShowFilepathAlert(!value);
+      if (!value) setAlert({ type: 'filepath' });
     });
   }, []);
 
@@ -51,8 +51,7 @@ function Main() {
       newChords,
       documentName: currentDocumentName,
     });
-    setSaveIsSuccessful(response);
-    setShowSaveAlert(true);
+    setAlert({ type: 'save', success: response });
   };
 
   const selectLibrary = async (libraryName: string) => {
@@ -72,7 +71,7 @@ function Main() {
       setEditableLyrics({});
 
       if (response.error === 'Lyric contains bracket') {
-        setShowBracketErrorAlert(true);
+        setAlert({ type: 'bracket' });
       }
 
       return;
@@ -86,63 +85,61 @@ function Main() {
   };
 
   const updateLyrics = (newLyrics: string, cueUuid: string) => {
-    const tempEditableLyrics = { ...editableLyrics };
-    tempEditableLyrics[cueUuid] = newLyrics;
-    setEditableLyrics(tempEditableLyrics);
+    setEditableLyrics((prev) => ({ ...prev, [cueUuid]: newLyrics }));
   };
 
   const groupElements =
     lyrics && editableLyrics
-      ? Object.keys(groups).map((key: string) => {
-          return (
-            <Group
-              lyricsPlusChords={editableLyrics}
-              originalLyrics={lyrics}
-              key={groups[key].group.uuid.string}
-              cueGroup={groups[key]}
-              onEdit={updateLyrics}
-            />
-          );
-        })
+      ? Object.values(groups).map((cueGroup) => (
+          <Group
+            lyricsPlusChords={editableLyrics}
+            originalLyrics={lyrics}
+            key={cueGroup.group.uuid.string}
+            cueGroup={cueGroup}
+            onEdit={updateLyrics}
+          />
+        ))
       : [];
+
+  const alertConfig = {
+    filepath: {
+      label: 'No ProPresenter folder found.',
+      buttonLabel: 'Select',
+      content:
+        'To get started, select the ProPresenter folder from your system.',
+      onClose: () => {
+        setAlert({ type: null });
+        selectNewFilePath();
+      },
+    },
+    save: {
+      label: alert.success ? 'Save successful!' : 'Save failed.',
+      buttonLabel: 'Dismiss',
+      content: alert.success
+        ? 'Your changes have been saved.'
+        : 'Error saving file. Please try again.',
+      onClose: () => setAlert({ type: null }),
+    },
+    bracket: {
+      label: 'Error loading document',
+      buttonLabel: 'Dismiss',
+      content:
+        'This document contains a bracket. Documents with brackets are not currently supported. Please remove the bracket and try again.',
+      onClose: () => setAlert({ type: null }),
+    },
+  };
+
+  const currentAlert = alert.type ? alertConfig[alert.type] : null;
 
   return (
     <div id="main">
-      {showFilepathAlert && (
+      {currentAlert && (
         <Alert
-          onClose={() => {
-            setShowFilepathAlert(false);
-            selectNewFilePath();
-          }}
-          buttonLabel="Select"
-          alertLabel="No ProPresenter folder found."
+          onClose={currentAlert.onClose}
+          buttonLabel={currentAlert.buttonLabel}
+          alertLabel={currentAlert.label}
         >
-          To get started, select the ProPresenter folder from your system.
-        </Alert>
-      )}
-      {showSaveAlert && (
-        <Alert
-          onClose={() => {
-            setShowSaveAlert(false);
-          }}
-          buttonLabel="Dismiss"
-          alertLabel={saveIsSuccessful ? 'Save successful!' : 'Save failed.'}
-        >
-          {saveIsSuccessful
-            ? 'Your changes have been saved.'
-            : 'Error saving file. Please try again.'}
-        </Alert>
-      )}
-      {showBracketErrorAlert && (
-        <Alert
-          onClose={() => {
-            setShowBracketErrorAlert(false);
-          }}
-          buttonLabel="Dismiss"
-          alertLabel="Error loading document"
-        >
-          This document contains a bracket. Documents with brackets are not
-          currently supported. Please remove the bracket and try again.
+          {currentAlert.content}
         </Alert>
       )}
       <div className="left-panel panel">
